@@ -1,0 +1,30 @@
+import { defineField, defineType } from "sanity";
+
+export const book = defineType({
+  name: "book",
+  title: "Book",
+  type: "document",
+  fields: [
+    defineField({ name: "title", type: "string", validation: (r) => r.required() }),
+    defineField({ name: "slug", type: "slug", options: { source: "title" }, validation: (r) => r.required() }),
+    defineField({ name: "coverImage", type: "image", validation: (r) => r.required(), fields: [defineField({ name: "alt", type: "string", validation: (r) => r.required() })] }),
+    defineField({ name: "subtitle", type: "string" }),
+    defineField({ name: "series", type: "reference", to: [{ type: "series" }] }),
+    defineField({ name: "seriesOrder", type: "number" }),
+    defineField({ name: "genre", type: "array", of: [{ type: "string" }] }),
+    defineField({ name: "publishDate", type: "date" }),
+    defineField({ name: "publisher", type: "string" }),
+    defineField({ name: "isbn", type: "string" }),
+    defineField({ name: "pageCount", type: "number" }),
+    defineField({ name: "synopsis", type: "blockContent" }),
+    defineField({ name: "shortDescription", type: "text", validation: (r) => r.max(200) }),
+    defineField({ name: "sampleChapter", type: "file", options: { accept: ".pdf" } }),
+    defineField({ name: "bookTrailerUrl", type: "url" }),
+    defineField({ name: "purchaseLinks", type: "array", of: [{ type: "object", fields: [defineField({ name: "store", type: "string" }), defineField({ name: "url", type: "url" }), defineField({ name: "format", type: "string" }), defineField({ name: "price", type: "string" })] }] }),
+    defineField({ name: "awards", type: "array", of: [{ type: "object", fields: [defineField({ name: "name", type: "string" }), defineField({ name: "year", type: "string" }), defineField({ name: "image", type: "image" })] }] }),
+    defineField({ name: "reviews", type: "array", of: [{ type: "object", fields: [defineField({ name: "quote", type: "text" }), defineField({ name: "reviewer", type: "string" }), defineField({ name: "source", type: "string" }), defineField({ name: "rating", type: "number", validation: (r) => r.min(1).max(5) })] }] }),
+    defineField({ name: "relatedBooks", type: "array", of: [{ type: "reference", to: [{ type: "book" }] }] }),
+    defineField({ name: "isFeatured", type: "boolean" }),
+    defineField({ name: "status", type: "string", options: { list: ["Published", "Coming Soon", "Pre-Order"] } }),
+  ],
+});
