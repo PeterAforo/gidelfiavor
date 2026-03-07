@@ -1,0 +1,16 @@
+# Render Blueprint for Backend Deployment
+services:
+  - type: web
+    name: gidelfiavor-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false  # Set this manually in Render dashboard
