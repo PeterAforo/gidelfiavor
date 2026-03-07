@@ -26,10 +26,12 @@ const truncateText = (text: string, maxLength: number = 300) => {
 
 const Index = () => {
   // All hooks must be called unconditionally at the top
-  const { data: content } = useSiteContent();
-  const { data: books } = useBooks();
-  const { data: testimonials } = useTestimonials();
-  const { data: articles } = useArticles(true);
+  const { data: content, isLoading: contentLoading } = useSiteContent();
+  const { data: books, isLoading: booksLoading } = useBooks();
+  const { data: testimonials, isLoading: testimonialsLoading } = useTestimonials();
+  const { data: articles, isLoading: articlesLoading } = useArticles(true);
+  
+  const isLoading = contentLoading || booksLoading || testimonialsLoading || articlesLoading;
   
   const aboutRef = useRef(null);
   const aboutInView = useInView(aboutRef, { once: true, margin: "-100px" });
@@ -57,6 +59,32 @@ const Index = () => {
   ];
   
   const iconMap: Record<string, any> = { BookOpen, Users, Award, Heart };
+
+  // Show loading skeleton while data is being fetched
+  if (isLoading) {
+    return (
+      <>
+        <HeroSection />
+        <section className="py-20 bg-secondary">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <div className="h-4 w-24 bg-muted rounded mx-auto mb-3 animate-pulse"></div>
+              <div className="h-8 w-64 bg-muted rounded mx-auto animate-pulse"></div>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-background rounded-xl p-6 animate-pulse">
+                  <div className="w-12 h-12 bg-muted rounded-full mx-auto mb-4"></div>
+                  <div className="h-5 w-32 bg-muted rounded mx-auto mb-2"></div>
+                  <div className="h-3 w-48 bg-muted rounded mx-auto"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>

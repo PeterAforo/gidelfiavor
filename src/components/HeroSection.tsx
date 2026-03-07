@@ -5,14 +5,41 @@ import { useSiteContent, useSiteSettings } from "@/hooks/useCms";
 import heroImage from "@/assets/777.png";
 
 const HeroSection = () => {
-  const { data: content } = useSiteContent();
-  const { data: settings } = useSiteSettings();
+  const { data: content, isLoading: contentLoading } = useSiteContent();
+  const { data: settings, isLoading: settingsLoading } = useSiteSettings();
 
-  // Get author name from content or settings
-  const authorName = content?.hero_title || settings?.site_name || "Gidel Kwasi Fiavor";
+  const isLoading = contentLoading || settingsLoading;
+
+  // Get author name from content or settings - only use fallback after loading
+  const authorName = isLoading ? "" : (content?.hero_title || settings?.site_name || "Gidel Kwasi Fiavor");
   const nameParts = authorName.split(" ");
   const firstName = nameParts.slice(0, -1).join(" ") || nameParts[0];
   const lastName = nameParts[nameParts.length - 1] || "";
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <section className="relative flex items-start overflow-hidden bg-background pt-20 pb-0">
+        <div className="container mx-auto px-6 pb-0">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start pt-8 relative">
+            <div className="lg:pr-4">
+              <div className="h-4 w-24 bg-muted rounded mb-4 animate-pulse"></div>
+              <div className="space-y-2 mb-6">
+                <div className="h-16 w-64 bg-muted rounded animate-pulse"></div>
+                <div className="h-16 w-48 bg-muted rounded animate-pulse"></div>
+              </div>
+              <div className="h-4 w-full bg-muted rounded mb-2 animate-pulse"></div>
+              <div className="h-4 w-3/4 bg-muted rounded mb-6 animate-pulse"></div>
+              <div className="h-12 w-40 bg-muted rounded-full animate-pulse"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <div className="w-[400px] h-[600px] bg-muted rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative flex items-start overflow-hidden bg-background pt-20 pb-0">
