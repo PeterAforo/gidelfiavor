@@ -9,6 +9,7 @@ import AdminGuard from "@/components/AdminGuard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ThemeColorProvider from "@/components/ThemeColorProvider";
 import DynamicFavicon from "@/components/DynamicFavicon";
+import { PersonSchema, WebsiteSchema } from "@/components/SEO";
 
 import Index from "./pages/Index";
 import AboutPage from "./pages/AboutPage";
@@ -48,6 +49,8 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeColorProvider>
         <DynamicFavicon />
+        <PersonSchema />
+        <WebsiteSchema />
         <TooltipProvider>
           <Toaster />
           <Sonner />

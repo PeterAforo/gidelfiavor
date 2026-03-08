@@ -15,6 +15,7 @@ import { fetchSocialPosts } from './socialMediaApi.js';
 import { generateToken, verifyToken, authMiddleware } from './auth.js';
 import { initEmailService, sendContactEmail, sendContactAutoReply, sendNewsletterWelcome } from './emailService.js';
 import { requestLogger, metricsMiddleware, getHealthStatus, trackError, checkAlerts } from './monitoring.js';
+import { generateSitemap } from './sitemap.js';
 
 dotenv.config();
 const { Pool } = pg;
@@ -155,6 +156,18 @@ app.get('/api/health', (req, res) => {
 // Monitoring endpoints
 app.get('/api/monitoring/alerts', authMiddleware, (req, res) => {
   res.json({ alerts: checkAlerts() });
+});
+
+// Sitemap endpoint
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const sitemap = await generateSitemap(pool, 'https://www.gidelfiavor.com');
+    res.set('Content-Type', 'application/xml');
+    res.send(sitemap);
+  } catch (err) {
+    console.error('Sitemap error:', err.message);
+    res.status(500).send('Error generating sitemap');
+  }
 });
 
 // Helper function to generate slug from title
