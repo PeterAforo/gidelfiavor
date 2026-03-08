@@ -1,5 +1,5 @@
 import HeroSection from "@/components/HeroSection";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useBooks, useTestimonials, useSiteContent, useArticles } from "@/hooks/useCms";
@@ -35,13 +35,9 @@ const Index = () => {
   const isLoading = contentLoading || booksLoading || testimonialsLoading || articlesLoading;
   
   const aboutRef = useRef(null);
-  const aboutInView = useInView(aboutRef, { once: true, amount: 0.1 });
   const servicesRef = useRef(null);
-  const servicesInView = useInView(servicesRef, { once: true, amount: 0.1 });
   const booksRef = useRef(null);
-  const booksInView = useInView(booksRef, { once: true, amount: 0.1 });
   const testimonialsRef = useRef(null);
-  const testimonialsInView = useInView(testimonialsRef, { once: true, amount: 0.1 });
 
   // Note: Homepage always uses the custom HeroSection component for consistent design.
   // Page builder sections for "home" are ignored to preserve the designed layout.
@@ -96,7 +92,8 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.6 }}
             className="text-center mb-8 md:mb-12"
           >
@@ -112,7 +109,8 @@ const Index = () => {
                 <motion.div
                   key={service.title}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
                   className="rounded-xl p-6 text-center transition-colors"
                   style={{ 
@@ -137,7 +135,8 @@ const Index = () => {
             {/* Left - Years of Experience */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: servicesInView ? 1 : 0, x: servicesInView ? 0 : -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               className="rounded-xl p-8"
               style={{ backgroundColor: 'hsl(var(--stats-card, var(--secondary)))' }}
@@ -158,7 +157,8 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="rounded-xl p-6 text-center"
                 style={{ backgroundColor: 'hsl(var(--stats-card, var(--secondary)))' }}
@@ -168,7 +168,8 @@ const Index = () => {
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: 0.55 }}
                 className="rounded-xl p-6 text-center"
                 style={{ backgroundColor: 'hsl(var(--stats-card, var(--secondary)))' }}
@@ -178,7 +179,8 @@ const Index = () => {
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="rounded-xl p-6 text-center"
                 style={{ 
@@ -193,7 +195,8 @@ const Index = () => {
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: servicesInView ? 1 : 0, y: servicesInView ? 0 : 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: 0.65 }}
                 className="rounded-xl p-6 text-center"
                 style={{ 
@@ -217,7 +220,8 @@ const Index = () => {
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: aboutInView ? 1 : 0, y: aboutInView ? 0 : 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.6 }}
             className="text-center mb-8 md:mb-12"
           >
@@ -234,7 +238,8 @@ const Index = () => {
             {/* Left - Numbered Cards */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: aboutInView ? 1 : 0, x: aboutInView ? 0 : -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.8 }}
               className="space-y-4"
             >
@@ -258,7 +263,8 @@ const Index = () => {
                 <motion.div
                   key={item.num}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: aboutInView ? 1 : 0, y: aboutInView ? 0 : 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
                   className="bg-secondary rounded-xl p-6 hover:shadow-md transition-shadow"
                 >
@@ -273,7 +279,8 @@ const Index = () => {
               ))}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: aboutInView ? 1 : 0, y: aboutInView ? 0 : 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 <Link to="/about" className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors mt-4">
@@ -285,7 +292,8 @@ const Index = () => {
             {/* Right - Photo with decorative elements */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: aboutInView ? 1 : 0, x: aboutInView ? 0 : 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
@@ -342,7 +350,8 @@ const Index = () => {
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: testimonialsInView ? 1 : 0, y: testimonialsInView ? 0 : 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6 }}
               className="text-center mb-8 md:mb-12"
             >
@@ -354,7 +363,8 @@ const Index = () => {
                 <motion.div
                   key={t.id}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: testimonialsInView ? 1 : 0, y: testimonialsInView ? 0 : 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
                   className="bg-background rounded-xl p-5 md:p-6 shadow-sm"
                 >
