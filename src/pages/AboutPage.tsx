@@ -172,14 +172,14 @@ const AboutPage = () => {
               className="bg-secondary rounded-xl p-8"
             >
               <div className="flex items-center gap-6 mb-4">
-                <span className="font-display text-6xl md:text-7xl font-bold text-primary">27</span>
+                <span className="font-display text-6xl md:text-7xl font-bold text-primary">{content?.years_experience || "27"}</span>
                 <div>
                   <h3 className="font-display text-xl md:text-2xl font-bold text-foreground">Years Of</h3>
                   <h3 className="font-display text-xl md:text-2xl font-bold text-foreground">Experience</h3>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground font-body">
-                Healthcare marketing specialist, theologian, and author providing expert guidance to help people and institutions grow with purpose.
+                {content?.experience_description || "Healthcare marketing specialist, theologian, and author providing expert guidance to help people and institutions grow with purpose."}
               </p>
             </motion.div>
 
@@ -191,8 +191,8 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="bg-secondary rounded-xl p-6 text-center"
               >
-                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">3</p>
-                <p className="text-xs text-muted-foreground font-body">Published Books</p>
+                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">{content?.stat_books || "3"}</p>
+                <p className="text-xs text-muted-foreground font-body">{content?.stat_books_label || "Published Books"}</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -200,8 +200,8 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: 0.55 }}
                 className="bg-secondary rounded-xl p-6 text-center"
               >
-                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">Harvard</p>
-                <p className="text-xs text-muted-foreground font-body">Certified</p>
+                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">{content?.stat_certification || "Harvard"}</p>
+                <p className="text-xs text-muted-foreground font-body">{content?.stat_certification_label || "Certified"}</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -209,8 +209,8 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="bg-secondary rounded-xl p-6 text-center border-l-4 border-primary"
               >
-                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">200+</p>
-                <p className="text-xs text-muted-foreground font-body">Workshops</p>
+                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">{content?.stat_workshops || "200+"}</p>
+                <p className="text-xs text-muted-foreground font-body">{content?.stat_workshops_label || "Workshops"}</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -218,8 +218,8 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: 0.65 }}
                 className="bg-secondary rounded-xl p-6 text-center border-l-4 border-primary"
               >
-                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">1,000+</p>
-                <p className="text-xs text-muted-foreground font-body">Lives Transformed</p>
+                <p className="font-display text-3xl md:text-4xl font-bold text-foreground mb-1">{content?.stat_lives || "1,000+"}</p>
+                <p className="text-xs text-muted-foreground font-body">{content?.stat_lives_label || "Lives Transformed"}</p>
               </motion.div>
             </div>
           </div>

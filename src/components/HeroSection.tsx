@@ -56,7 +56,7 @@ const HeroSection = () => {
               <img
                 src={content?.hero_image || heroImage}
                 alt={authorName}
-                className="w-auto h-[40vh] md:h-[50vh] lg:h-[600px] object-contain max-w-full"
+                className="w-auto h-[50vh] md:h-[60vh] lg:h-[700px] object-contain max-w-full"
                 loading="eager"
               />
             </div>
@@ -100,7 +100,7 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 1 }}
-        className="relative lg:absolute lg:bottom-[-20px] left-0 right-0 pointer-events-none z-10 overflow-hidden mt-6 lg:mt-0"
+        className="relative lg:absolute lg:bottom-[20px] left-0 right-0 pointer-events-none z-10 overflow-hidden mt-6 lg:mt-0"
       >
         <div className="container mx-auto px-6">
           <h2 className="font-display text-[6vw] md:text-[4vw] lg:text-[5vw] font-bold leading-none text-transparent tracking-tight"
