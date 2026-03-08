@@ -67,7 +67,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="lg:pr-4 order-2 lg:order-1 text-center lg:text-left"
+            className="lg:pr-4 order-2 lg:order-1 text-center lg:text-left lg:pb-32"
           >
             <p className="text-foreground/60 font-body text-sm uppercase tracking-wider mb-4">
               {content?.hero_greeting || "HELLO I'M"}
