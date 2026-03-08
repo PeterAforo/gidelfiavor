@@ -56,11 +56,8 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
           levels: [1, 2, 3],
         },
       }),
-      Underline.configure({
-        name: 'underline',
-      }),
+      Underline,
       Link.configure({
-        name: 'link',
         openOnClick: false,
         HTMLAttributes: {
           class: 'text-primary underline cursor-pointer',
