@@ -5,10 +5,11 @@ import { useSiteContent, useSiteSettings } from "@/hooks/useCms";
 import heroImage from "@/assets/777.png";
 
 const HeroSection = () => {
-  const { data: content, isLoading: contentLoading } = useSiteContent();
-  const { data: settings, isLoading: settingsLoading } = useSiteSettings();
+  const { data: content, isLoading: contentLoading, isError: contentError } = useSiteContent();
+  const { data: settings, isLoading: settingsLoading, isError: settingsError } = useSiteSettings();
 
-  const isLoading = contentLoading || settingsLoading;
+  // Treat errors as "loaded" to prevent infinite loading state - show fallback content instead
+  const isLoading = (contentLoading && !contentError) || (settingsLoading && !settingsError);
 
   // Get author name from content or settings - only use fallback after loading
   const authorName = isLoading ? "" : (content?.hero_title || settings?.site_name || "Gidel Kwasi Fiavor");

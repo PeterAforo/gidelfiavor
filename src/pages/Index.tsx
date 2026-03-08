@@ -27,12 +27,14 @@ const truncateText = (text: string, maxLength: number = 300) => {
 
 const Index = () => {
   // All hooks must be called unconditionally at the top
-  const { data: content, isLoading: contentLoading } = useSiteContent();
-  const { data: books, isLoading: booksLoading } = useBooks();
-  const { data: testimonials, isLoading: testimonialsLoading } = useTestimonials();
-  const { data: articles, isLoading: articlesLoading } = useArticles(true);
+  const { data: content, isLoading: contentLoading, isError: contentError } = useSiteContent();
+  const { data: books, isLoading: booksLoading, isError: booksError } = useBooks();
+  const { data: testimonials, isLoading: testimonialsLoading, isError: testimonialsError } = useTestimonials();
+  const { data: articles, isLoading: articlesLoading, isError: articlesError } = useArticles(true);
   
-  const isLoading = contentLoading || booksLoading || testimonialsLoading || articlesLoading;
+  // Only show loading if content is still loading (most important), others can load in background
+  // Also consider errors as "loaded" to prevent infinite loading state
+  const isLoading = contentLoading && !contentError;
   
   const aboutRef = useRef(null);
   const servicesRef = useRef(null);
