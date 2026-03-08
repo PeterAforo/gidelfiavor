@@ -7,7 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useBooks, useArticles, useTestimonials, useGalleryImages } from "@/hooks/useCms";
-import { getApiBaseUrl } from "@/lib/api";
+import { getApiBaseUrl, resolveImageUrl } from "@/lib/api";
 import { ArrowRight, Quote, BookOpen, Users, Award, Heart, MapPin, Mail, Phone, Star, GraduationCap, Briefcase } from "lucide-react";
 
 // Icon mapping for dynamic icon rendering
@@ -456,7 +456,7 @@ const GallerySection = ({ section }: { section: Section }) => {
                   <div className="flex justify-center">
                     {item.image && (
                       <img
-                        src={item.image}
+                        src={resolveImageUrl(item.image)}
                         alt={item.title}
                         className="w-48 md:w-56 shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-3xl filter hover:brightness-110"
                         loading="lazy"
@@ -485,7 +485,7 @@ const GalleryCard = ({ item, isDark }: { item: any; isDark?: boolean }) => (
   <div className={`${isDark ? "bg-muted/10 hover:bg-muted/20" : "bg-secondary"} rounded-xl p-6 transition-colors`}>
     {item.image && (
       <img
-        src={item.image}
+        src={resolveImageUrl(item.image)}
         alt={item.title}
         className="w-32 mx-auto shadow-2xl mb-6 group-hover:scale-110 group-hover:shadow-3xl transition-all duration-500 filter group-hover:brightness-110"
         loading="lazy"

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
 import { useArticles, useDeleteArticle } from "@/hooks/useCms";
+import { resolveImageUrl } from "@/lib/api";
 import { Plus, Trash2, Edit, Eye, EyeOff, Calendar, User, Clock, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { format, formatDistanceToNow, isFuture } from "date-fns";
@@ -75,7 +76,7 @@ const AdminArticles = () => {
                   <div className="w-28 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
                     {article.image_url ? (
                       <img 
-                        src={article.image_url} 
+                        src={resolveImageUrl(article.image_url)} 
                         alt={article.title}
                         className="w-full h-full object-cover"
                       />

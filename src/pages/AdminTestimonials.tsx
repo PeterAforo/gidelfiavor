@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/AdminLayout";
-import { testimonialsApi } from "@/lib/api";
+import { testimonialsApi, resolveImageUrl } from "@/lib/api";
 import { Plus, Trash2, Edit, X, Save, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
@@ -179,7 +179,7 @@ const AdminTestimonials = () => {
             <div key={t.id} className={`bg-card border rounded-lg p-4 ${!t.is_approved ? 'border-yellow-500/50 bg-yellow-50/5' : 'border-border'}`}>
               <div className="flex items-start gap-4">
                 {t.image_url && (
-                  <img src={t.image_url} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
+                  <img src={resolveImageUrl(t.image_url)} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
                 )}
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">

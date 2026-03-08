@@ -12,6 +12,17 @@ export const getApiBaseUrl = () => {
   return url.replace(/\/api$/, '');
 };
 
+// Helper to resolve image URLs - handles both absolute URLs and relative paths
+export const resolveImageUrl = (url: string | undefined | null): string => {
+  if (!url) return '';
+  // If already an absolute URL (http/https), return as-is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  // If relative path, prefix with API base URL
+  return `${getApiBaseUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {

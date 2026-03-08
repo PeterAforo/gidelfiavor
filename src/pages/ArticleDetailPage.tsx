@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import authorPortrait from "@/assets/author-portrait.jpg";
 import { toast } from "sonner";
-import { commentsApi, articlesApi } from "@/lib/api";
+import { commentsApi, articlesApi, resolveImageUrl } from "@/lib/api";
 
 const ArticleDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -156,7 +156,7 @@ const ArticleDetailPage = () => {
             {(article as { image_url?: string }).image_url && (
               <div className="rounded-xl overflow-hidden mb-6">
                 <img
-                  src={(article as { image_url?: string }).image_url}
+                  src={resolveImageUrl((article as { image_url?: string }).image_url)}
                   alt={article.title}
                   className="w-full aspect-video object-cover"
                 />
@@ -367,7 +367,7 @@ const ArticleDetailPage = () => {
                   <Link key={post.id} to={`/articles/${post.id}`} className="flex items-start gap-3 group">
                     <div className="w-16 h-16 bg-foreground/10 rounded-lg flex-shrink-0 overflow-hidden">
                       {(post as { image_url?: string }).image_url ? (
-                        <img src={(post as { image_url?: string }).image_url} alt={post.title} className="w-full h-full object-cover" />
+                        <img src={resolveImageUrl((post as { image_url?: string }).image_url)} alt={post.title} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-foreground/5 to-foreground/10" />
                       )}

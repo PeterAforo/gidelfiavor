@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGalleryImages, useUpsertGalleryImage, useDeleteGalleryImage, uploadFile } from "@/hooks/useCms";
+import { resolveImageUrl } from "@/lib/api";
 import { Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -52,7 +53,7 @@ const AdminGallery = () => {
           {images?.length === 0 && <p className="text-muted-foreground font-body col-span-full">No images yet.</p>}
           {images?.map((img) => (
             <div key={img.id} className="bg-card border border-border rounded-sm overflow-hidden group relative">
-              <img src={img.image_url} alt={img.caption} className="w-full h-48 object-cover" />
+              <img src={resolveImageUrl(img.image_url)} alt={img.caption} className="w-full h-48 object-cover" />
               <div className="p-3">
                 <input
                   defaultValue={img.caption}

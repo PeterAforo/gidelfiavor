@@ -3,6 +3,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useBooks, useTestimonials, useSiteContent, useArticles } from "@/hooks/useCms";
+import { resolveImageUrl } from "@/lib/api";
 import { Quote, ArrowRight, BookOpen, Users, Award, Heart } from "lucide-react";
 import authorPortrait from "@/assets/author-portrait.jpg";
 import book1 from "@/assets/book-1.jpg";
@@ -407,7 +408,7 @@ const Index = () => {
                     <div className="aspect-[4/3] bg-secondary">
                       {article.image_url ? (
                         <img
-                          src={article.image_url}
+                          src={resolveImageUrl(article.image_url)}
                           alt={article.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"

@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { ArrowRight, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useArticles, usePageSections } from "@/hooks/useCms";
+import { resolveImageUrl } from "@/lib/api";
 import SectionRenderer from "@/components/SectionRenderer";
 import PageHeader from "@/components/PageHeader";
 
@@ -59,7 +60,7 @@ const ArticlesPage = () => {
                     <div className="aspect-[4/3] bg-secondary">
                       {article.image_url ? (
                         <img
-                          src={article.image_url}
+                          src={resolveImageUrl(article.image_url)}
                           alt={article.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"

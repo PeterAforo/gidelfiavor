@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { filesApi } from "@/lib/api";
+import { filesApi, resolveImageUrl } from "@/lib/api";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -71,7 +71,7 @@ const ImageUpload = ({
       {value ? (
         <div className="relative inline-block">
           <img
-            src={value}
+            src={resolveImageUrl(value)}
             alt="Uploaded"
             className="max-w-full h-auto max-h-48 rounded-lg border border-border"
           />
