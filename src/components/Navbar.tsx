@@ -73,7 +73,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 pt-[env(safe-area-inset-top)] ${
         scrolled
           ? "bg-background/95 backdrop-blur-md shadow-sm py-3"
           : "bg-background py-4"
@@ -115,7 +115,7 @@ const Navbar = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/60 hover:bg-foreground/10 hover:text-foreground transition-colors"
+                  className="w-11 h-11 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/60 hover:bg-foreground/10 hover:text-foreground transition-colors"
                   aria-label={social.label}
                 >
                   <social.icon size={14} />
@@ -179,7 +179,7 @@ const Navbar = () => {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/60"
+                      className="w-11 h-11 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/60"
                       aria-label={social.label}
                     >
                       <social.icon size={16} />
