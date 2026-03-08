@@ -16,6 +16,7 @@ import { generateToken, verifyToken, authMiddleware } from './auth.js';
 import { initEmailService, sendContactEmail, sendContactAutoReply, sendNewsletterWelcome } from './emailService.js';
 import { requestLogger, metricsMiddleware, getHealthStatus, trackError, checkAlerts } from './monitoring.js';
 import { generateSitemap } from './sitemap.js';
+import { initCloudinary, uploadFileToCloudinary, isCloudinaryConfigured } from './cloudinary.js';
 
 dotenv.config();
 const { Pool } = pg;
@@ -26,28 +27,34 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.API_PORT || 3001;
 
-// Ensure uploads directory exists
+// Initialize Cloudinary
+const cloudinaryEnabled = initCloudinary();
+console.log(`Cloudinary enabled: ${cloudinaryEnabled}`);
+
+// Ensure uploads directory exists (fallback for local storage)
 const uploadsDir = path.join(__dirname, '../public/uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folder = req.query.folder || 'general';
-    const folderPath = path.join(uploadsDir, folder);
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-    cb(null, folderPath);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const uniqueName = `${uuidv4()}${ext}`;
-    cb(null, uniqueName);
-  }
-});
+// Multer configuration - use memory storage for Cloudinary, disk storage for local
+const storage = cloudinaryEnabled 
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: (req, file, cb) => {
+        const folder = req.query.folder || 'general';
+        const folderPath = path.join(uploadsDir, folder);
+        if (!fs.existsSync(folderPath)) {
+          fs.mkdirSync(folderPath, { recursive: true });
+        }
+        cb(null, folderPath);
+      },
+      filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const uniqueName = `${uuidv4()}${ext}`;
+        cb(null, uniqueName);
+      }
+    });
 
 const upload = multer({
   storage,
@@ -1208,16 +1215,32 @@ app.post('/api/files/upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
     const folder = req.query.folder || 'general';
-    const filePath = `/uploads/${folder}/${req.file.filename}`;
-    const fullUrl = `http://localhost:${PORT}${filePath}`;
+    
+    let fileUrl, filename;
+    
+    // Use Cloudinary if configured, otherwise fall back to local storage
+    if (isCloudinaryConfigured()) {
+      const cloudinaryResult = await uploadFileToCloudinary(req.file, folder);
+      if (!cloudinaryResult.success) {
+        return res.status(500).json({ error: cloudinaryResult.error || 'Cloudinary upload failed' });
+      }
+      fileUrl = cloudinaryResult.url;
+      filename = cloudinaryResult.publicId;
+    } else {
+      // Local storage fallback
+      const filePath = `/uploads/${folder}/${req.file.filename}`;
+      fileUrl = filePath; // Store relative path, will be resolved on frontend
+      filename = req.file.filename;
+    }
     
     const result = await pool.query(
       'INSERT INTO files (filename, original_name, file_path, file_type, file_size, folder) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [req.file.filename, req.file.originalname, filePath, req.file.mimetype, req.file.size, folder]
+      [filename, req.file.originalname, fileUrl, req.file.mimetype, req.file.size, folder]
     );
     
-    res.json({ ...result.rows[0], url: fullUrl });
+    res.json({ ...result.rows[0], url: fileUrl });
   } catch (err) {
+    console.error('File upload error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -1232,17 +1255,32 @@ app.post('/api/files/upload-multiple', upload.array('files', 20), async (req, re
     const uploadedFiles = [];
     
     for (const file of req.files) {
-      const filePath = `/uploads/${folder}/${file.filename}`;
-      const fullUrl = `http://localhost:${PORT}${filePath}`;
+      let fileUrl, filename;
+      
+      if (isCloudinaryConfigured()) {
+        const cloudinaryResult = await uploadFileToCloudinary(file, folder);
+        if (!cloudinaryResult.success) {
+          console.error('Cloudinary upload failed for file:', file.originalname);
+          continue;
+        }
+        fileUrl = cloudinaryResult.url;
+        filename = cloudinaryResult.publicId;
+      } else {
+        const filePath = `/uploads/${folder}/${file.filename}`;
+        fileUrl = filePath;
+        filename = file.filename;
+      }
+      
       const result = await pool.query(
         'INSERT INTO files (filename, original_name, file_path, file_type, file_size, folder) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [file.filename, file.originalname, filePath, file.mimetype, file.size, folder]
+        [filename, file.originalname, fileUrl, file.mimetype, file.size, folder]
       );
-      uploadedFiles.push({ ...result.rows[0], url: fullUrl });
+      uploadedFiles.push({ ...result.rows[0], url: fileUrl });
     }
     
     res.json(uploadedFiles);
   } catch (err) {
+    console.error('Multiple file upload error:', err);
     res.status(500).json({ error: err.message });
   }
 });
