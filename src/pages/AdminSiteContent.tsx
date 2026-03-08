@@ -3,7 +3,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { useSiteContent, useUpsertSiteContent } from "@/hooks/useCms";
 import { Save, ChevronDown, ChevronUp, Plus, Trash2, Upload, X, Palette } from "lucide-react";
 import { toast } from "sonner";
-import { filesApi } from "@/lib/api";
+import { filesApi, getApiBaseUrl } from "@/lib/api";
 
 interface FieldConfig {
   key: string;
@@ -227,16 +227,17 @@ const AdminSiteContent = () => {
 
   const handleImageUpload = async (fieldKey: string, file: File) => {
     setUploading(fieldKey);
+    const apiBase = getApiBaseUrl();
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await fetch(`http://localhost:3001/api/files/upload?folder=hero`, {
+      const response = await fetch(`${apiBase}/api/files/upload?folder=hero`, {
         method: 'POST',
         body: formData,
       });
       if (!response.ok) throw new Error('Upload failed');
       const data = await response.json();
-      const imageUrl = data.url.startsWith('http') ? data.url : `http://localhost:3001${data.url}`;
+      const imageUrl = data.url.startsWith('http') ? data.url : `${apiBase}${data.url}`;
       setValues((v) => ({ ...v, [fieldKey]: data.url }));
       
       // If this is the hero image, extract dominant color and update theme
@@ -309,7 +310,7 @@ const AdminSiteContent = () => {
                         {values[field.key] && (
                           <div className="relative inline-block">
                             <img
-                              src={values[field.key].startsWith('http') ? values[field.key] : `http://localhost:3001${values[field.key]}`}
+                              src={values[field.key].startsWith('http') ? values[field.key] : `${getApiBaseUrl()}${values[field.key]}`}
                               alt="Preview"
                               className="w-40 h-40 object-cover rounded-lg border border-border"
                             />

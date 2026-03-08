@@ -7,6 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useBooks, useArticles, useTestimonials, useGalleryImages } from "@/hooks/useCms";
+import { getApiBaseUrl } from "@/lib/api";
 import { ArrowRight, Quote, BookOpen, Users, Award, Heart, MapPin, Mail, Phone, Star, GraduationCap, Briefcase } from "lucide-react";
 
 // Icon mapping for dynamic icon rendering
@@ -765,7 +766,7 @@ const SocialFeedSection = ({ section }: { section: Section }) => {
       };
       params.append("mediaType", mediaTypeMap[mediaType] || mediaType);
     }
-    fetch(`http://localhost:3001/api/social-posts?${params}`)
+    fetch(`${getApiBaseUrl()}/api/social-posts?${params}`)
       .then(res => res.json())
       .then(data => {
         setPosts(data || []);

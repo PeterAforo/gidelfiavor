@@ -5,6 +5,13 @@
 // Use environment variable for API URL, fallback to localhost for development
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Export base URL for components that need direct access
+export const getApiBaseUrl = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  // Remove /api suffix to get base URL
+  return url.replace(/\/api$/, '');
+};
+
 export async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {
