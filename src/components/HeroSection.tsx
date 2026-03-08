@@ -42,27 +42,44 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="relative flex items-start overflow-hidden bg-background pt-20 pb-0">
-      <div className="container mx-auto px-6 pb-0">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start pt-8 relative">
-          {/* Left content - Name + About Me section moved here */}
+    <section className="relative flex flex-col overflow-hidden bg-background pt-20 pb-8 lg:pb-0">
+      <div className="container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center pt-4 lg:pt-8 relative">
+          {/* Image - Shows FIRST on mobile (order-1), second on desktop (lg:order-2) */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative flex justify-center order-1 lg:order-2"
+          >
+            <div className="relative">
+              <img
+                src={content?.hero_image || heroImage}
+                alt={authorName}
+                className="w-auto h-[40vh] md:h-[50vh] lg:h-[600px] object-contain max-w-full"
+                loading="eager"
+              />
+            </div>
+          </motion.div>
+
+          {/* Text content - Shows SECOND on mobile (order-2), first on desktop (lg:order-1) */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="lg:pr-4"
+            className="lg:pr-4 order-2 lg:order-1 text-center lg:text-left"
           >
             <p className="text-foreground/60 font-body text-sm uppercase tracking-wider mb-4">
               {content?.hero_greeting || "HELLO I'M"}
             </p>
-            <h1 className="font-display text-[3.5rem] md:text-[4.2rem] lg:text-[5.8rem] font-black text-foreground mb-6" style={{ lineHeight: '0.85' }}>
+            <h1 className="font-display text-[2.5rem] md:text-[3.5rem] lg:text-[5rem] font-black text-foreground mb-4 lg:mb-6" style={{ lineHeight: '0.9' }}>
               {nameParts.map((part, index) => (
                 <span key={index} className="block">{part}</span>
               ))}
             </h1>
             
             {/* About Me content */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <p className="font-body text-sm text-muted-foreground leading-relaxed">
                 {content?.hero_subtitle || "A passionate healthcare marketing specialist, theologian, marriage counsellor, and author with nearly three decades of professional experience."}
               </p>
@@ -75,40 +92,22 @@ const HeroSection = () => {
               {content?.hero_cta || "View Portfolio"} <ArrowRight size={16} />
             </Link>
           </motion.div>
-
-          {/* Right - Image */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative flex justify-center row-span-2"
-          >
-            <div className="relative">
-              <img
-                src={content?.hero_image || heroImage}
-                alt={authorName}
-                className="w-auto h-[50vh] md:h-[70vh] lg:h-[800px] object-contain max-w-full"
-                loading="eager"
-              />
-            </div>
-          </motion.div>
-          
-          </div>
+        </div>
       </div>
       
-      {/* Background text - absolute positioned at bottom, full width, overlapping hero image */}
+      {/* Background text - relative on mobile, absolute on desktop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 1 }}
-        className="absolute bottom-[-20px] left-0 right-0 pointer-events-none z-10 overflow-hidden"
+        className="relative lg:absolute lg:bottom-[-20px] left-0 right-0 pointer-events-none z-10 overflow-hidden mt-6 lg:mt-0"
       >
         <div className="container mx-auto px-6">
-          <h2 className="font-display text-[4vw] lg:text-[5vw] font-bold leading-none text-transparent tracking-tight"
-              style={{ WebkitTextStroke: '1px rgba(0,0,0,0.1)' }}>
+          <h2 className="font-display text-[6vw] md:text-[4vw] lg:text-[5vw] font-bold leading-none text-transparent tracking-tight"
+              style={{ WebkitTextStroke: '1px rgba(0,0,0,0.15)' }}>
             {content?.hero_tagline_1 || "HEALTHCARE MARKETING STRATEGIST"}
           </h2>
-          <h2 className="font-display text-[8vw] lg:text-[10vw] font-bold leading-none tracking-tight -mt-[1vw] text-primary"
+          <h2 className="font-display text-[10vw] md:text-[8vw] lg:text-[10vw] font-bold leading-none tracking-tight -mt-[1vw] text-primary"
               style={{ 
                 WebkitTextStroke: '2px hsl(var(--primary))',
                 opacity: 0.85

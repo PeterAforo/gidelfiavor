@@ -91,16 +91,16 @@ const Index = () => {
       <HeroSection />
 
       {/* Services/What I Do */}
-      <section className="py-20" ref={servicesRef} style={{ backgroundColor: 'hsl(var(--stats-bg, var(--secondary)))' }}>
+      <section className="py-16 md:py-20" ref={servicesRef} style={{ backgroundColor: 'hsl(var(--stats-bg, var(--secondary)))' }}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={servicesInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-8 md:mb-12"
           >
             <p className="font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold" style={{ color: 'hsl(var(--stats-accent, var(--primary)))' }}>What I Do</p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold" style={{ color: 'hsl(var(--stats-foreground, var(--foreground)))' }}>Services & Expertise</h2>
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold" style={{ color: 'hsl(var(--stats-foreground, var(--foreground)))' }}>Services & Expertise</h2>
           </motion.div>
           
           {/* Service Cards Row */}
@@ -211,20 +211,20 @@ const Index = () => {
       </section>
 
       {/* About preview - numbered cards layout */}
-      <section className="py-20 bg-background" ref={aboutRef}>
+      <section className="py-16 md:py-20 bg-background" ref={aboutRef}>
         <div className="container mx-auto px-6">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={aboutInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-8 md:mb-12"
           >
             <p className="text-primary font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold">{content?.about_label || "About Me"}</p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
               {content?.about_heading || "Inspiring Excellence in Healthcare, Faith & Family"}
             </h2>
-            <p className="text-muted-foreground font-body max-w-2xl mx-auto">
+            <p className="text-muted-foreground font-body max-w-2xl mx-auto text-sm md:text-base">
               {content?.about_subtitle || "Helping people and institutions grow with purpose through wisdom, integrity, and divine purpose."}
             </p>
           </motion.div>
@@ -309,24 +309,24 @@ const Index = () => {
 
       {/* Featured Book - large showcase with theme background */}
       {displayBooks.length > 0 && (
-        <section className="py-20" ref={booksRef} style={{ backgroundColor: 'hsl(var(--stats-bg, var(--secondary)))' }}>
+        <section className="py-16 md:py-20 bg-primary" ref={booksRef}>
           <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-              <div className="flex justify-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-center">
+              <div className="flex justify-center order-1 lg:order-1">
                 <img
                   src={displayBooks[0].cover_url || fallbackCovers[0]}
                   alt={displayBooks[0].title}
-                  className="w-64 md:w-80 lg:w-96 rounded-xl shadow-2xl"
+                  className="w-48 md:w-64 lg:w-80 rounded-xl shadow-2xl"
                   loading="lazy"
                 />
               </div>
-              <div>
-                <p className="text-white/80 font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold">Featured Book</p>
-                <h2 className="text-white font-display text-3xl md:text-4xl font-bold mb-4">{displayBooks[0].title}</h2>
-                <p className="text-white/70 font-body leading-relaxed mb-6">
+              <div className="order-2 lg:order-2 text-center lg:text-left">
+                <p className="text-primary-foreground/80 font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold">Featured Book</p>
+                <h2 className="text-primary-foreground font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-4">{displayBooks[0].title}</h2>
+                <p className="text-primary-foreground/70 font-body leading-relaxed mb-6 text-sm md:text-base">
                   {truncateText(displayBooks[0].description, 350) || "A comprehensive guide providing departmental policies and frameworks for healthcare institutions striving for world-class standards and excellence."}
                 </p>
-                <Link to="/books" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary font-body font-semibold text-sm rounded-full hover:bg-white/90 transition-colors">
+                <Link to="/books" className="inline-flex items-center gap-2 px-6 py-3 bg-background text-primary font-body font-semibold text-sm rounded-full hover:bg-background/90 transition-colors">
                   Get the Book <ArrowRight size={16} />
                 </Link>
               </div>
@@ -337,35 +337,35 @@ const Index = () => {
 
       {/* Testimonials */}
       {displayTestimonials.length > 0 && (
-        <section className="py-20 bg-secondary" ref={testimonialsRef}>
+        <section className="py-16 md:py-20 bg-secondary" ref={testimonialsRef}>
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={testimonialsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="text-center mb-12"
+              className="text-center mb-8 md:mb-12"
             >
               <p className="text-primary font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold">Testimonials</p>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">What Readers Say</h2>
+              <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">What Readers Say</h2>
             </motion.div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {displayTestimonials.map((t, i) => (
                 <motion.div
                   key={t.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={testimonialsInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="bg-background rounded-xl p-6 shadow-sm"
+                  className="bg-background rounded-xl p-5 md:p-6 shadow-sm"
                 >
-                  <Quote className="text-primary mb-4" size={24} />
+                  <Quote className="text-primary mb-3 md:mb-4" size={20} />
                   <p className="font-body text-foreground/80 leading-relaxed mb-4 text-sm">"{t.quote}"</p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-primary font-bold text-sm">{t.name.charAt(0)}</span>
                     </div>
-                    <div>
-                      <p className="font-display font-bold text-foreground text-sm">{t.name}</p>
-                      <p className="text-xs text-muted-foreground font-body">{t.role}</p>
+                    <div className="min-w-0">
+                      <p className="font-display font-bold text-foreground text-sm truncate">{t.name}</p>
+                      <p className="text-xs text-muted-foreground font-body truncate">{t.role}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -376,20 +376,20 @@ const Index = () => {
       )}
 
       {/* Latest Articles */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-background">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 md:mb-12"
           >
             <p className="text-primary font-body text-sm uppercase tracking-[0.2em] mb-3 font-semibold">Blog and News</p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Latest Articles & Insights</h2>
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">Latest Articles & Insights</h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {(articles && articles.length > 0 ? articles.slice(0, 3) : [
               { id: "1", title: "The Power of Faith in Healthcare Leadership", excerpt: "Exploring how faith-based principles can transform healthcare management and patient care.", category: "Healthcare", created_at: new Date().toISOString(), image_url: "" },
               { id: "2", title: "Building Stronger Marriages Through Forgiveness", excerpt: "Understanding the unreasonable vision of forgiveness and its role in lasting relationships.", category: "Marriage", created_at: new Date().toISOString(), image_url: "" },
