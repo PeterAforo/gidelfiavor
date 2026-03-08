@@ -147,11 +147,14 @@ export const useDeleteGalleryImage = () => {
 };
 
 // Testimonials
-export const useTestimonials = () =>
+export const useTestimonials = (approvedOnly = true) =>
   useQuery({
-    queryKey: ["testimonials"],
+    queryKey: ["testimonials", approvedOnly],
     queryFn: async () => {
       try {
+        if (approvedOnly) {
+          return await testimonialsApi.getApproved();
+        }
         return await testimonialsApi.getAll();
       } catch {
         return [];
