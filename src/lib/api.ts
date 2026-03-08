@@ -98,7 +98,7 @@ export const albumsApi = {
 // Auth
 export const authApi = {
   login: (email: string, password: string) => 
-    fetchAPI<{ user: any; isAdmin: boolean }>('/auth/login', { 
+    fetchAPI<{ user: any; token: string; isAdmin: boolean }>('/auth/login', { 
       method: 'POST', 
       body: JSON.stringify({ email, password }) 
     }),

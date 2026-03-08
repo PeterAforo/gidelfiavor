@@ -10,9 +10,11 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-import nodemailer from 'nodemailer';
 import { sanitizeString, sanitizeHtml, validators, validateRequest } from './validation.js';
 import { fetchSocialPosts } from './socialMediaApi.js';
+import { generateToken, verifyToken, authMiddleware } from './auth.js';
+import { initEmailService, sendContactEmail, sendContactAutoReply, sendNewsletterWelcome } from './emailService.js';
+import { requestLogger, metricsMiddleware, getHealthStatus, trackError, checkAlerts } from './monitoring.js';
 
 dotenv.config();
 const { Pool } = pg;
@@ -97,6 +99,10 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
+// Monitoring middleware
+app.use(requestLogger);
+app.use(metricsMiddleware);
+
 // Rate limiting
 const generalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -140,9 +146,15 @@ pool.connect((err, client, release) => {
 
 // ============ API ROUTES ============
 
-// Health check
+// Health check with monitoring
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'API is running' });
+  const health = getHealthStatus();
+  res.json(health);
+});
+
+// Monitoring endpoints
+app.get('/api/monitoring/alerts', authMiddleware, (req, res) => {
+  res.json({ alerts: checkAlerts() });
 });
 
 // Helper function to generate slug from title
@@ -1056,8 +1068,11 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
     }
     
     if (isValidPassword) {
+      // Generate JWT token
+      const token = generateToken(user);
       res.json({ 
         user: { id: user.id, email: user.email, name: user.name },
+        token,
         isAdmin: true 
       });
     } else {
@@ -1828,52 +1843,32 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
     const sanitizedSubject = sanitizeString(subject || 'Contact Form Submission', 200);
     const sanitizedMessage = sanitizeString(message, 5000);
     
-    // Get site settings for recipient email
-    const settingsResult = await pool.query('SELECT contact_email FROM site_settings LIMIT 1');
-    const recipientEmail = settingsResult.rows[0]?.contact_email || process.env.CONTACT_EMAIL || 'author@gidelfiavor.com';
+    // Store in database
+    await pool.query(
+      'INSERT INTO contact_submissions (name, email, subject, message, ip_address) VALUES ($1, $2, $3, $4, $5)',
+      [sanitizedName, sanitizedEmail, sanitizedSubject, sanitizedMessage, req.ip]
+    );
     
-    // Create email transporter (configure via env variables)
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+    // Send email notification using email service
+    const emailResult = await sendContactEmail({
+      name: sanitizedName,
+      email: sanitizedEmail,
+      subject: sanitizedSubject,
+      message: sanitizedMessage
     });
     
-    // If SMTP is configured, send email
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      await transporter.sendMail({
-        from: `"${sanitizedName}" <${process.env.SMTP_USER}>`,
-        replyTo: sanitizedEmail,
-        to: recipientEmail,
-        subject: `Contact Form: ${sanitizedSubject}`,
-        text: `Name: ${sanitizedName}\nEmail: ${sanitizedEmail}\n\nMessage:\n${sanitizedMessage}`,
-        html: `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${sanitizedName}</p>
-          <p><strong>Email:</strong> ${sanitizedEmail}</p>
-          <p><strong>Subject:</strong> ${sanitizedSubject}</p>
-          <hr>
-          <p><strong>Message:</strong></p>
-          <p>${sanitizedMessage.replace(/\n/g, '<br>')}</p>
-        `,
-      });
-      
+    // Send auto-reply to user
+    await sendContactAutoReply({ name: sanitizedName, email: sanitizedEmail });
+    
+    if (emailResult.success) {
       res.json({ success: true, message: 'Your message has been sent successfully!' });
     } else {
-      // Store in database if email not configured
-      await pool.query(
-        'INSERT INTO contact_submissions (name, email, subject, message, ip_address) VALUES ($1, $2, $3, $4, $5)',
-        [sanitizedName, sanitizedEmail, sanitizedSubject, sanitizedMessage, req.ip]
-      );
-      
+      // Email failed but submission was stored
       res.json({ success: true, message: 'Your message has been received. We will get back to you soon!' });
     }
   } catch (err) {
     console.error('Contact form error:', err.message);
+    trackError(err, { endpoint: '/api/contact' });
     res.status(500).json({ error: 'Failed to send message. Please try again later.' });
   }
 });
@@ -1920,6 +1915,9 @@ app.post('/api/newsletter/subscribe', newsletterLimiter, async (req, res) => {
       'INSERT INTO newsletter_subscribers (email, name, ip_address) VALUES ($1, $2, $3)',
       [sanitizedEmail, sanitizedName, req.ip]
     );
+    
+    // Send welcome email
+    await sendNewsletterWelcome({ email: sanitizedEmail, name: sanitizedName });
     
     res.json({ success: true, message: 'Thank you for subscribing!' });
   } catch (err) {
