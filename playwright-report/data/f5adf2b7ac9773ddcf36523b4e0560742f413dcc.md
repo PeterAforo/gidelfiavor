@@ -1,0 +1,219 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "G Gidel Fiavor" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e8]: G
+          - generic [ref=e9]: Gidel Fiavor
+        - generic [ref=e10]:
+          - link "Home" [ref=e11] [cursor=pointer]:
+            - /url: /
+          - link "About" [ref=e12] [cursor=pointer]:
+            - /url: /about
+          - link "Books" [ref=e13] [cursor=pointer]:
+            - /url: /books
+          - link "Articles" [ref=e14] [cursor=pointer]:
+            - /url: /articles
+          - link "Gallery" [ref=e15] [cursor=pointer]:
+            - /url: /gallery
+          - link "Contact" [ref=e16] [cursor=pointer]:
+            - /url: /contact
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic "Social link not configured" [ref=e19]:
+              - img [ref=e20]
+            - generic "Social link not configured" [ref=e24]:
+              - img [ref=e25]
+            - generic "Social link not configured" [ref=e29]:
+              - img [ref=e30]
+            - generic "Social link not configured" [ref=e32]:
+              - img [ref=e33]
+          - link "Contact" [ref=e35] [cursor=pointer]:
+            - /url: /contact
+            - img [ref=e36]
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: What I Do
+        - heading "Services & Expertise" [level=2] [ref=e57]
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - img [ref=e61]
+          - heading "Published Author" [level=3] [ref=e64]
+          - paragraph [ref=e65]: Author of books on healthcare, faith, and marriage
+        - generic [ref=e66]:
+          - img [ref=e68]
+          - heading "Marriage Counsellor" [level=3] [ref=e73]
+          - paragraph [ref=e74]: Guiding couples toward stronger relationships
+        - generic [ref=e75]:
+          - img [ref=e77]
+          - heading "Healthcare Marketing" [level=3] [ref=e80]
+          - paragraph [ref=e81]: 27+ years advancing healthcare excellence
+        - generic [ref=e82]:
+          - img [ref=e84]
+          - heading "Theologian" [level=3] [ref=e86]
+          - paragraph [ref=e87]: Faith-based transformation and ministry leadership
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: "27"
+            - generic [ref=e92]:
+              - heading "Years Of" [level=3] [ref=e93]
+              - heading "Experience" [level=3] [ref=e94]
+          - paragraph [ref=e95]: Healthcare marketing specialist, theologian, and author providing expert guidance to help people and institutions grow with purpose.
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - paragraph [ref=e98]: "3"
+            - paragraph [ref=e99]: Published Books
+          - generic [ref=e100]:
+            - paragraph [ref=e101]: Harvard
+            - paragraph [ref=e102]: Certified
+          - generic [ref=e103]:
+            - paragraph [ref=e104]: 200+
+            - paragraph [ref=e105]: Workshops & Seminars
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: 1,000+
+            - paragraph [ref=e108]: Lives Transformed
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: About Me
+        - heading "Inspiring Excellence in Healthcare, Faith & Family" [level=2] [ref=e113]
+        - paragraph [ref=e114]: Helping people and institutions grow with purpose through wisdom, integrity, and divine purpose.
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - generic [ref=e118]:
+            - generic [ref=e119]: "01."
+            - generic [ref=e120]:
+              - heading "Healthcare Marketing Specialist" [level=3] [ref=e121]
+              - paragraph [ref=e122]: As an Associate Member of the Chartered Institute of Marketing, Ghana (ACIMG), dedicated to advancing healthcare excellence and leadership.
+          - generic [ref=e124]:
+            - generic [ref=e125]: "02."
+            - generic [ref=e126]:
+              - heading "Theologian & Marriage Counsellor" [level=3] [ref=e127]
+              - paragraph [ref=e128]: Guiding individuals and couples toward healing, faith-based transformation, and stronger relationships through compassionate counseling.
+          - generic [ref=e130]:
+            - generic [ref=e131]: "03."
+            - generic [ref=e132]:
+              - heading "Published Author" [level=3] [ref=e133]
+              - paragraph [ref=e134]: Author of books on healthcare policies, faith, and marriage including 'The Hearts of Men and the Will of God' and 'The Unreasonable Vision of Forgiveness in Marriage'.
+          - link "Learn More About Me" [ref=e136] [cursor=pointer]:
+            - /url: /about
+            - text: Learn More About Me
+            - img [ref=e137]
+        - img "Gidel Kwasi Fiavor" [ref=e145]
+    - generic [ref=e147]:
+      - generic [ref=e148]:
+        - paragraph [ref=e149]: Blog and News
+        - heading "Latest Articles & Insights" [level=2] [ref=e150]
+      - generic [ref=e151]:
+        - link "Gidel Fiavor Healthcare The Power of Faith in Healthcare Leadership Exploring how faith-based principles can transform healthcare management and patient care. READ MORE" [ref=e153] [cursor=pointer]:
+          - /url: /articles/1
+          - generic [ref=e154]:
+            - img [ref=e157]
+            - generic [ref=e160]:
+              - generic [ref=e161]:
+                - img [ref=e162]
+                - text: Gidel Fiavor
+              - generic [ref=e167]: Healthcare
+          - heading "The Power of Faith in Healthcare Leadership" [level=3] [ref=e168]
+          - paragraph [ref=e169]: Exploring how faith-based principles can transform healthcare management and patient care.
+          - generic [ref=e170]:
+            - text: READ MORE
+            - img [ref=e171]
+        - link "Gidel Fiavor Marriage Building Stronger Marriages Through Forgiveness Understanding the unreasonable vision of forgiveness and its role in lasting relationships. READ MORE" [ref=e175] [cursor=pointer]:
+          - /url: /articles/2
+          - generic [ref=e176]:
+            - img [ref=e179]
+            - generic [ref=e182]:
+              - generic [ref=e183]:
+                - img [ref=e184]
+                - text: Gidel Fiavor
+              - generic [ref=e189]: Marriage
+          - heading "Building Stronger Marriages Through Forgiveness" [level=3] [ref=e190]
+          - paragraph [ref=e191]: Understanding the unreasonable vision of forgiveness and its role in lasting relationships.
+          - generic [ref=e192]:
+            - text: READ MORE
+            - img [ref=e193]
+        - 'link "Gidel Fiavor Theology Celibacy and Purpose: A Modern Perspective Examining celibacy as a worthy calling in today''s world from theological and cultural viewpoints. READ MORE" [ref=e197] [cursor=pointer]':
+          - /url: /articles/3
+          - generic [ref=e198]:
+            - img [ref=e201]
+            - generic [ref=e204]:
+              - generic [ref=e205]:
+                - img [ref=e206]
+                - text: Gidel Fiavor
+              - generic [ref=e211]: Theology
+          - 'heading "Celibacy and Purpose: A Modern Perspective" [level=3] [ref=e212]'
+          - paragraph [ref=e213]: Examining celibacy as a worthy calling in today's world from theological and cultural viewpoints.
+          - generic [ref=e214]:
+            - text: READ MORE
+            - img [ref=e215]
+      - link "View All Articles" [ref=e219] [cursor=pointer]:
+        - /url: /articles
+        - text: View All Articles
+        - img [ref=e220]
+    - contentinfo [ref=e223]:
+      - generic [ref=e225]:
+        - generic [ref=e226]:
+          - link "G Gidel" [ref=e227] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e229]: G
+            - generic [ref=e230]: Gidel
+          - heading "Get Ready To Create Great" [level=3] [ref=e231]:
+            - text: Get Ready To
+            - text: Create Great
+          - generic [ref=e232]:
+            - textbox "Email Address" [ref=e233]
+            - button [ref=e234] [cursor=pointer]:
+              - img [ref=e235]
+        - generic [ref=e238]:
+          - heading "Quick Link" [level=4] [ref=e239]
+          - generic [ref=e240]:
+            - link "About Me" [ref=e241] [cursor=pointer]:
+              - /url: /about
+            - link "Books" [ref=e242] [cursor=pointer]:
+              - /url: /books
+            - link "Contact Us" [ref=e243] [cursor=pointer]:
+              - /url: /contact
+            - link "Blog Post" [ref=e244] [cursor=pointer]:
+              - /url: /articles
+            - link "Gallery" [ref=e245] [cursor=pointer]:
+              - /url: /gallery
+        - generic [ref=e246]:
+          - heading "Contact" [level=4] [ref=e247]
+          - generic [ref=e248]:
+            - link "author@gidelfiavor.com" [ref=e249] [cursor=pointer]:
+              - /url: mailto:author@gidelfiavor.com
+              - img [ref=e250]
+              - text: author@gidelfiavor.com
+            - paragraph [ref=e253]:
+              - img [ref=e254]
+              - text: PO Box CS 8318, Tema, Ghana
+            - paragraph [ref=e257]:
+              - img [ref=e258]
+              - text: +233 XX XXX XXXX
+          - generic [ref=e260]:
+            - generic "Social link not configured" [ref=e261]:
+              - img [ref=e262]
+            - generic "Social link not configured" [ref=e266]:
+              - img [ref=e267]
+            - generic "Social link not configured" [ref=e271]:
+              - img [ref=e272]
+            - generic "Social link not configured" [ref=e274]:
+              - img [ref=e275]
+      - generic [ref=e278]:
+        - paragraph [ref=e279]: © Gidel Fiavor 2026 | All Rights Reserved
+        - generic [ref=e280]:
+          - link "Terms & Condition" [ref=e281] [cursor=pointer]:
+            - /url: /terms
+          - link "Privacy Policy" [ref=e282] [cursor=pointer]:
+            - /url: /privacy
+          - link "Contact Us" [ref=e283] [cursor=pointer]:
+            - /url: /contact
+```

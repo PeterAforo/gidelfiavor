@@ -47,7 +47,7 @@ const GalleryPage = () => {
   const navigateLightbox = (direction: 'prev' | 'next') => {
     if (!lightboxImage || !albumDetail?.media) return;
     const media = albumDetail.media;
-    let newIndex = direction === 'next' 
+    const newIndex = direction === 'next' 
       ? (lightboxImage.index + 1) % media.length
       : (lightboxImage.index - 1 + media.length) % media.length;
     setLightboxImage({

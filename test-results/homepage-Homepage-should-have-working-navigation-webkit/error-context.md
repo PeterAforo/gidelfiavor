@@ -1,0 +1,99 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "G Gidel Fiavor" [ref=e6]:
+          - /url: /
+          - generic [ref=e8]: G
+          - generic [ref=e9]: Gidel Fiavor
+        - generic [ref=e10]:
+          - link "Home" [ref=e11]:
+            - /url: /
+          - link "About" [ref=e12]:
+            - /url: /about
+          - link "Books" [ref=e13]:
+            - /url: /books
+          - link "Articles" [ref=e14]:
+            - /url: /articles
+          - link "Gallery" [ref=e15]:
+            - /url: /gallery
+          - link "Contact" [ref=e16]:
+            - /url: /contact
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic "Social link not configured" [ref=e19]:
+              - img [ref=e20]
+            - generic "Social link not configured" [ref=e23]:
+              - img [ref=e24]
+            - generic "Social link not configured" [ref=e28]:
+              - img [ref=e29]
+            - generic "Social link not configured" [ref=e31]:
+              - img [ref=e32]
+          - link "Contact" [ref=e34]:
+            - /url: /contact
+            - img [ref=e35]
+    - contentinfo [ref=e71]:
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - link "G Gidel" [ref=e75]:
+            - /url: /
+            - generic [ref=e77]: G
+            - generic [ref=e78]: Gidel
+          - heading "Get Ready To Create Great" [level=3] [ref=e79]:
+            - text: Get Ready To
+            - text: Create Great
+          - generic [ref=e80]:
+            - textbox "Email Address" [ref=e81]
+            - button [ref=e82] [cursor=pointer]:
+              - img [ref=e83]
+        - generic [ref=e86]:
+          - heading "Quick Link" [level=4] [ref=e87]
+          - generic [ref=e88]:
+            - link "About Me" [ref=e89]:
+              - /url: /about
+            - link "Books" [ref=e90]:
+              - /url: /books
+            - link "Contact Us" [ref=e91]:
+              - /url: /contact
+            - link "Blog Post" [ref=e92]:
+              - /url: /articles
+            - link "Gallery" [ref=e93]:
+              - /url: /gallery
+        - generic [ref=e94]:
+          - heading "Contact" [level=4] [ref=e95]
+          - generic [ref=e96]:
+            - link "author@gidelfiavor.com" [ref=e97]:
+              - /url: mailto:author@gidelfiavor.com
+              - img [ref=e98]
+              - text: author@gidelfiavor.com
+            - paragraph [ref=e101]:
+              - img [ref=e102]
+              - text: PO Box CS 8318, Tema, Ghana
+            - paragraph [ref=e105]:
+              - img [ref=e106]
+              - text: +233 XX XXX XXXX
+          - generic [ref=e108]:
+            - generic "Social link not configured" [ref=e109]:
+              - img [ref=e110]
+            - generic "Social link not configured" [ref=e113]:
+              - img [ref=e114]
+            - generic "Social link not configured" [ref=e118]:
+              - img [ref=e119]
+            - generic "Social link not configured" [ref=e121]:
+              - img [ref=e122]
+      - generic [ref=e125]:
+        - paragraph [ref=e126]: © Gidel Fiavor 2026 | All Rights Reserved
+        - generic [ref=e127]:
+          - link "Terms & Condition" [ref=e128]:
+            - /url: /terms
+          - link "Privacy Policy" [ref=e129]:
+            - /url: /privacy
+          - link "Contact Us" [ref=e130]:
+            - /url: /contact
+```

@@ -29,8 +29,11 @@ const truncateText = (text: string, maxLength: number = 300) => {
 };
 
 const BooksPage = () => {
-  // Try to load sections from backend Page Builder
+  // All hooks must be called unconditionally at the top
   const { data: pageSections = [] } = usePageSections("books");
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { data: books } = useBooks();
   
   // If sections exist in backend, render them instead of hardcoded content
   if (pageSections.length > 0) {
@@ -42,9 +45,6 @@ const BooksPage = () => {
   }
 
   // Fallback to original hardcoded content
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { data: books } = useBooks();
   const displayBooks = books && books.length > 0 ? books : fallbackBooks;
 
   return (

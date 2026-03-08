@@ -1,73 +1,176 @@
-# Welcome to your Lovable project
+# Gidel Kwasi Fiavor - Personal Portfolio & CMS
 
-## Project info
+Official website for **Elder Gidel Kwasi Fiavor** - Author, Theologian & Healthcare Marketing Specialist.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+🌐 **Live Site**: [www.gidelfiavor.com](https://www.gidelfiavor.com)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **Full CMS** - Manage books, articles, gallery, testimonials
+- **Page Builder** - Drag-and-drop page sections
+- **Admin Dashboard** - Complete content management
+- **Blog/Articles** - Rich text editor with categories
+- **Gallery** - Album-based photo management
+- **Contact Form** - With email notifications
+- **Newsletter** - Subscriber management
+- **SEO Optimized** - Sitemap, meta tags, structured data
+- **Responsive** - Mobile-first design
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech Stack
 
-**Use your preferred IDE**
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 18, TypeScript, Vite |
+| Styling | Tailwind CSS, shadcn/ui |
+| Backend | Express.js, Node.js |
+| Database | PostgreSQL (Neon) |
+| Auth | JWT, bcrypt |
+| Hosting | Vercel (frontend), Render (backend) |
+| Images | Cloudinary CDN |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Quick Start
 
-Follow these steps:
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+# Clone repository
+git clone https://github.com/PeterAforo/gidelfiavor.git
+cd gidelfiavor
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install frontend dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Install backend dependencies
+cd server && npm install && cd ..
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Run development servers
+npm run dev:all
 ```
 
-**Edit a file directly in GitHub**
+### Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start frontend dev server |
+| `npm run server` | Start backend server |
+| `npm run dev:all` | Start both servers |
+| `npm run build` | Build for production |
+| `npm run test` | Run unit tests |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run lint` | Run ESLint |
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+├── src/                  # Frontend React app
+│   ├── components/       # Reusable components
+│   ├── pages/           # Page components
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utilities
+│   └── test/            # Unit tests
+├── server/              # Backend Express API
+│   ├── index.js         # Main server file
+│   ├── auth.js          # JWT authentication
+│   ├── emailService.js  # Email sending
+│   └── cloudinary.js    # Image uploads
+├── e2e/                 # Playwright E2E tests
+├── docs/                # Documentation
+│   ├── API.md           # API documentation
+│   ├── COMPONENTS.md    # Component docs
+│   ├── SMTP_SETUP.md    # Email configuration
+│   └── CLOUDINARY_SETUP.md  # Image storage setup
+└── public/              # Static assets
+```
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Environment Variables
 
-## How can I deploy this project?
+### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:3001/api
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-key
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Backend (server/.env)
+```env
+DATABASE_URL=postgresql://...
+JWT_SECRET=your-secret
+SMTP_HOST=smtp.gmail.com
+SMTP_USER=your-email
+SMTP_PASS=your-app-password
+CLOUDINARY_CLOUD_NAME=your-cloud
+CLOUDINARY_API_KEY=your-key
+CLOUDINARY_API_SECRET=your-secret
+```
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Frontend (Vercel)
+- Connect GitHub repo to Vercel
+- Set `VITE_API_URL` to production API URL
+- Deploy automatically on push
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Backend (Render)
+- Create Web Service from GitHub
+- Set environment variables
+- Deploy automatically on push
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions.
+
+---
+
+## Documentation
+
+- [API Documentation](docs/API.md)
+- [Component Documentation](docs/COMPONENTS.md)
+- [SMTP Setup](docs/SMTP_SETUP.md)
+- [Cloudinary Setup](docs/CLOUDINARY_SETUP.md)
+
+---
+
+## Testing
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests (requires Playwright)
+npm run test:e2e
+
+# E2E with UI
+npm run test:e2e:ui
+```
+
+---
+
+## License
+
+MIT License - See [LICENSE](LICENSE) for details.
+
+---
+
+## Author
+
+**Gidel Kwasi Fiavor**
+- Website: [gidelfiavor.com](https://www.gidelfiavor.com)
+- GitHub: [PeterAforo](https://github.com/PeterAforo)

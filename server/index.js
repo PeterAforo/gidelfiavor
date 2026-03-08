@@ -98,7 +98,18 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
+// Static file serving with caching headers
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads'), {
+  maxAge: '7d',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    }
+  }
+}));
 
 // Monitoring middleware
 app.use(requestLogger);

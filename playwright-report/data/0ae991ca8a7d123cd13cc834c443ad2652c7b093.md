@@ -1,0 +1,134 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "G Gidel Fiavor" [ref=e6]:
+          - /url: /
+          - generic [ref=e8]: G
+          - generic [ref=e9]: Gidel Fiavor
+        - generic [ref=e10]:
+          - link "Home" [ref=e11]:
+            - /url: /
+          - link "About" [ref=e12]:
+            - /url: /about
+          - link "Books" [ref=e13]:
+            - /url: /books
+          - link "Articles" [ref=e14]:
+            - /url: /articles
+          - link "Gallery" [ref=e15]:
+            - /url: /gallery
+          - link "Contact" [ref=e16]:
+            - /url: /contact
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic "Social link not configured" [ref=e19]:
+              - img [ref=e20]
+            - generic "Social link not configured" [ref=e23]:
+              - img [ref=e24]
+            - generic "Social link not configured" [ref=e28]:
+              - img [ref=e29]
+            - generic "Social link not configured" [ref=e31]:
+              - img [ref=e32]
+          - link "Contact" [ref=e34]:
+            - /url: /contact
+            - img [ref=e35]
+    - main [ref=e36]:
+      - generic [ref=e38]:
+        - heading "Contact" [level=1] [ref=e39]
+        - navigation [ref=e40]:
+          - link "Home" [ref=e42]:
+            - /url: /
+          - generic [ref=e43]:
+            - img [ref=e44]
+            - generic [ref=e46]: Contact
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e52]
+            - heading "Address" [level=3] [ref=e55]
+            - paragraph [ref=e56]: PO Box CS 8318, Tema, Ghana
+          - generic [ref=e57]:
+            - img [ref=e59]
+            - heading "E-Mail" [level=3] [ref=e62]
+            - link "author@gidelfiavor.com" [ref=e63]:
+              - /url: mailto:author@gidelfiavor.com
+          - generic [ref=e64]:
+            - img [ref=e66]
+            - heading "Call Me" [level=3] [ref=e68]
+            - paragraph [ref=e69]: +233 XX XXX XXXX
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - textbox "Your Name" [ref=e74]
+            - textbox "Phone Number" [ref=e75]
+          - generic [ref=e76]:
+            - textbox "Your Email" [ref=e77]
+            - textbox "Subject" [ref=e78]
+          - textbox "Your Message" [ref=e79]
+          - button "Send Message" [ref=e80] [cursor=pointer]:
+            - text: Send Message
+            - img [ref=e81]
+    - contentinfo [ref=e83]:
+      - generic [ref=e85]:
+        - generic [ref=e86]:
+          - link "G Gidel" [ref=e87]:
+            - /url: /
+            - generic [ref=e89]: G
+            - generic [ref=e90]: Gidel
+          - heading "Get Ready To Create Great" [level=3] [ref=e91]:
+            - text: Get Ready To
+            - text: Create Great
+          - generic [ref=e92]:
+            - textbox "Email Address" [ref=e93]
+            - button [ref=e94] [cursor=pointer]:
+              - img [ref=e95]
+        - generic [ref=e98]:
+          - heading "Quick Link" [level=4] [ref=e99]
+          - generic [ref=e100]:
+            - link "About Me" [ref=e101]:
+              - /url: /about
+            - link "Books" [ref=e102]:
+              - /url: /books
+            - link "Contact Us" [ref=e103]:
+              - /url: /contact
+            - link "Blog Post" [ref=e104]:
+              - /url: /articles
+            - link "Gallery" [ref=e105]:
+              - /url: /gallery
+        - generic [ref=e106]:
+          - heading "Contact" [level=4] [ref=e107]
+          - generic [ref=e108]:
+            - link "author@gidelfiavor.com" [ref=e109]:
+              - /url: mailto:author@gidelfiavor.com
+              - img [ref=e110]
+              - text: author@gidelfiavor.com
+            - paragraph [ref=e113]:
+              - img [ref=e114]
+              - text: PO Box CS 8318, Tema, Ghana
+            - paragraph [ref=e117]:
+              - img [ref=e118]
+              - text: +233 XX XXX XXXX
+          - generic [ref=e120]:
+            - generic "Social link not configured" [ref=e121]:
+              - img [ref=e122]
+            - generic "Social link not configured" [ref=e125]:
+              - img [ref=e126]
+            - generic "Social link not configured" [ref=e130]:
+              - img [ref=e131]
+            - generic "Social link not configured" [ref=e133]:
+              - img [ref=e134]
+      - generic [ref=e137]:
+        - paragraph [ref=e138]: © Gidel Fiavor 2026 | All Rights Reserved
+        - generic [ref=e139]:
+          - link "Terms & Condition" [ref=e140]:
+            - /url: /terms
+          - link "Privacy Policy" [ref=e141]:
+            - /url: /privacy
+          - link "Contact Us" [ref=e142]:
+            - /url: /contact
+```

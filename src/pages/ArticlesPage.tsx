@@ -16,8 +16,11 @@ const fallbackArticles = [
 ];
 
 const ArticlesPage = () => {
-  // Try to load sections from backend Page Builder
+  // All hooks must be called unconditionally at the top
   const { data: pageSections = [] } = usePageSections("articles");
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { data: articles } = useArticles(true);
   
   // If sections exist in backend, render them instead of hardcoded content
   if (pageSections.length > 0) {
@@ -29,9 +32,6 @@ const ArticlesPage = () => {
   }
 
   // Fallback to original hardcoded content
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { data: articles } = useArticles(true);
   const displayArticles = articles && articles.length > 0 ? articles : fallbackArticles;
 
   return (

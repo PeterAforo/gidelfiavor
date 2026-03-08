@@ -18,11 +18,11 @@ test.describe('Homepage', () => {
     const navbar = page.locator('nav');
     await expect(navbar).toBeVisible();
     
-    // Check navigation links
-    await expect(page.getByRole('link', { name: /about/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /books/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /articles/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /contact/i })).toBeVisible();
+    // Check navigation links exist (use first() to handle multiple matches)
+    await expect(page.getByRole('link', { name: /about/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /books/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /articles/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /contact/i }).first()).toBeVisible();
   });
 
   test('should navigate to About page', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Homepage', () => {
     await expect(page).toHaveURL(/books/);
   });
 
-  test('should have footer with social links', async ({ page }) => {
+  test('should have footer', async ({ page }) => {
     await page.goto('/');
     
     const footer = page.locator('footer');

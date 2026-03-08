@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "G Gidel Fiavor" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e8]: G
+          - generic [ref=e9]: Gidel Fiavor
+        - button "Toggle menu" [ref=e11] [cursor=pointer]:
+          - img [ref=e12]
+    - main [ref=e13]:
+      - generic [ref=e15]:
+        - heading "Contact" [level=1] [ref=e16]
+        - navigation [ref=e17]:
+          - link "Home" [ref=e19] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e20]:
+            - img [ref=e21]
+            - generic [ref=e23]: Contact
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - img [ref=e29]
+            - heading "Address" [level=3] [ref=e32]
+            - paragraph [ref=e33]: PO Box CS 8318, Tema, Ghana
+          - generic [ref=e34]:
+            - img [ref=e36]
+            - heading "E-Mail" [level=3] [ref=e39]
+            - link "author@gidelfiavor.com" [ref=e40] [cursor=pointer]:
+              - /url: mailto:author@gidelfiavor.com
+          - generic [ref=e41]:
+            - img [ref=e43]
+            - heading "Call Me" [level=3] [ref=e45]
+            - paragraph [ref=e46]: +233 XX XXX XXXX
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - textbox "Your Name" [ref=e51]
+            - textbox "Phone Number" [ref=e52]
+          - generic [ref=e53]:
+            - textbox "Your Email" [ref=e54]
+            - textbox "Subject" [ref=e55]
+          - textbox "Your Message" [ref=e56]
+          - button "Send Message" [ref=e57] [cursor=pointer]:
+            - text: Send Message
+            - img [ref=e58]
+    - contentinfo [ref=e60]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - link "G Gidel" [ref=e64] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e66]: G
+            - generic [ref=e67]: Gidel
+          - heading "Get Ready To Create Great" [level=3] [ref=e68]:
+            - text: Get Ready To
+            - text: Create Great
+          - generic [ref=e69]:
+            - textbox "Email Address" [ref=e70]
+            - button [ref=e71] [cursor=pointer]:
+              - img [ref=e72]
+        - generic [ref=e75]:
+          - heading "Quick Link" [level=4] [ref=e76]
+          - generic [ref=e77]:
+            - link "About Me" [ref=e78] [cursor=pointer]:
+              - /url: /about
+            - link "Books" [ref=e79] [cursor=pointer]:
+              - /url: /books
+            - link "Contact Us" [ref=e80] [cursor=pointer]:
+              - /url: /contact
+            - link "Blog Post" [ref=e81] [cursor=pointer]:
+              - /url: /articles
+            - link "Gallery" [ref=e82] [cursor=pointer]:
+              - /url: /gallery
+        - generic [ref=e83]:
+          - heading "Contact" [level=4] [ref=e84]
+          - generic [ref=e85]:
+            - link "author@gidelfiavor.com" [ref=e86] [cursor=pointer]:
+              - /url: mailto:author@gidelfiavor.com
+              - img [ref=e87]
+              - text: author@gidelfiavor.com
+            - paragraph [ref=e90]:
+              - img [ref=e91]
+              - text: PO Box CS 8318, Tema, Ghana
+            - paragraph [ref=e94]:
+              - img [ref=e95]
+              - text: +233 XX XXX XXXX
+          - generic [ref=e97]:
+            - generic "Social link not configured" [ref=e98]:
+              - img [ref=e99]
+            - generic "Social link not configured" [ref=e102]:
+              - img [ref=e103]
+            - generic "Social link not configured" [ref=e107]:
+              - img [ref=e108]
+            - generic "Social link not configured" [ref=e110]:
+              - img [ref=e111]
+      - generic [ref=e114]:
+        - paragraph [ref=e115]: © Gidel Fiavor 2026 | All Rights Reserved
+        - generic [ref=e116]:
+          - link "Terms & Condition" [ref=e117] [cursor=pointer]:
+            - /url: /terms
+          - link "Privacy Policy" [ref=e118] [cursor=pointer]:
+            - /url: /privacy
+          - link "Contact Us" [ref=e119] [cursor=pointer]:
+            - /url: /contact
+```
