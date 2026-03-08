@@ -982,8 +982,20 @@ app.post('/api/testimonials/submit', testimonyLimiter, async (req, res) => {
 // Get approved testimonials only (public)
 app.get('/api/testimonials/approved', async (req, res) => {
   try {
-    // Use COALESCE to treat NULL as true (for backwards compatibility with existing testimonials)
-    const result = await pool.query('SELECT id, name, role, quote, image_url FROM testimonials WHERE COALESCE(is_approved, true) = true ORDER BY sort_order ASC');
+    // Check if is_approved column exists
+    const columnCheck = await pool.query(`
+      SELECT column_name FROM information_schema.columns 
+      WHERE table_name = 'testimonials' AND column_name = 'is_approved'
+    `);
+    
+    let result;
+    if (columnCheck.rows.length > 0) {
+      // Column exists, filter by is_approved
+      result = await pool.query('SELECT id, name, role, quote, image_url FROM testimonials WHERE COALESCE(is_approved, true) = true ORDER BY sort_order ASC');
+    } else {
+      // Column doesn't exist, return all testimonials
+      result = await pool.query('SELECT id, name, role, quote, image_url FROM testimonials ORDER BY sort_order ASC');
+    }
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching approved testimonials:', err.message);
