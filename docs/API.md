@@ -4,7 +4,7 @@ Base URL: `https://www.gidelfiavor.com` (served by the Vercel function `api/inde
 
 **Authorization:** All admin routes (every create/update/delete on content, file uploads,
 `/api/setup`, `/api/admin/*`, `/api/analytics/dashboard`, `/api/files*`, the full
-`/api/testimonials` list, `/api/social-feeds`, `/api/auth/register`, `/api/auth/change-password`)
+`/api/testimonials` list, the `/api/pages` list and `/api/pages/:id`, `/api/social-feeds`, `/api/auth/register`, `/api/auth/change-password`)
 require `Authorization: Bearer <token>` using the token returned by `/api/auth/login`.
 Without it they return `401`. Public content reads, contact, newsletter, testimonial submission,
 comments, likes/views and analytics page views do not require a token.

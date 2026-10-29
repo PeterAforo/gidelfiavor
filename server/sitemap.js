@@ -25,14 +25,16 @@ export const generateSitemap = async (pool, baseUrl = 'https://www.gidelfiavor.c
   });
 
   try {
-    // Dynamic pages from database
+    // Custom CMS pages (built-in pages like "about" already have their own routes above)
+    const builtInSlugs = ['home', 'about', 'books', 'articles', 'gallery', 'contact'];
     const pagesResult = await pool.query(
-      "SELECT slug, updated_at FROM pages WHERE status = 'published' ORDER BY updated_at DESC"
+      'SELECT slug, created_at FROM pages WHERE is_published = true AND NOT (slug = ANY($1)) ORDER BY created_at DESC',
+      [builtInSlugs]
     );
     pagesResult.rows.forEach(page => {
       urls.push({
         loc: `${baseUrl}/page/${page.slug}`,
-        lastmod: page.updated_at ? new Date(page.updated_at).toISOString().split('T')[0] : now,
+        lastmod: page.created_at ? new Date(page.created_at).toISOString().split('T')[0] : now,
         changefreq: 'monthly',
         priority: '0.7',
       });
@@ -40,12 +42,12 @@ export const generateSitemap = async (pool, baseUrl = 'https://www.gidelfiavor.c
 
     // Articles
     const articlesResult = await pool.query(
-      'SELECT id, slug, created_at FROM articles WHERE published = true ORDER BY created_at DESC'
+      'SELECT id, created_at FROM articles WHERE published = true ORDER BY created_at DESC'
     );
+    // Article detail pages are loaded by numeric id (/articles/:id)
     articlesResult.rows.forEach(article => {
-      const slug = article.slug || article.id;
       urls.push({
-        loc: `${baseUrl}/articles/${slug}`,
+        loc: `${baseUrl}/articles/${article.id}`,
         lastmod: article.created_at ? new Date(article.created_at).toISOString().split('T')[0] : now,
         changefreq: 'monthly',
         priority: '0.8',

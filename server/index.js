@@ -589,7 +589,7 @@ app.delete('/api/menus/:id', authMiddleware, async (req, res) => {
 });
 
 // ============ PAGES ============
-app.get('/api/pages', async (req, res) => {
+app.get('/api/pages', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM pages ORDER BY created_at DESC');
     res.json(result.rows);
@@ -598,7 +598,7 @@ app.get('/api/pages', async (req, res) => {
   }
 });
 
-app.get('/api/pages/:id', async (req, res) => {
+app.get('/api/pages/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('SELECT * FROM pages WHERE id=$1', [id]);
@@ -611,7 +611,7 @@ app.get('/api/pages/:id', async (req, res) => {
 app.get('/api/pages/slug/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const result = await pool.query('SELECT * FROM pages WHERE slug=$1', [slug]);
+    const result = await pool.query('SELECT * FROM pages WHERE slug=$1 AND is_published = true', [slug]);
     res.json(result.rows[0] || null);
   } catch (err) {
     res.status(500).json({ error: err.message });
