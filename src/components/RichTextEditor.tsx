@@ -1,10 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import { useEffect, useState, useRef } from 'react';
 import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
 import { 
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
   List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon,
@@ -51,16 +49,16 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
+      // link and underline are bundled in StarterKit (Tiptap v3) - configure, don't re-add
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3],
         },
-      }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-primary underline cursor-pointer',
+        link: {
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'text-primary underline cursor-pointer',
+          },
         },
       }),
       Image.configure({
