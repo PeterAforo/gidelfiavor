@@ -3,15 +3,7 @@ import { Menu, X, Instagram, Linkedin, Twitter, Facebook, Youtube } from "lucide
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useSiteSettings, useMenus } from "@/hooks/useCms";
-
-const defaultNavLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Books", href: "/books" },
-  { label: "Articles", href: "/articles" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
-];
+import { resolveImageUrl } from "@/lib/api";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,31 +22,28 @@ const Navbar = () => {
     'contact': '/contact',
   };
 
-  // Use dynamic menus if available, otherwise fall back to defaults
+  // Navigation comes entirely from the CMS menus
   const navLinks = useMemo(() => {
-    if (menus && menus.length > 0) {
-      // Sort by sort_order and filter only visible items
-      return menus
-        .filter((menu: any) => menu.is_visible !== false)
-        .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
-        .map((menu: any) => {
-          // If menu has a custom URL, use it
-          if (menu.url) {
-            return { label: menu.title, href: menu.url };
-          }
-          
-          const slug = menu.page_slug || menu.slug || menu.title.toLowerCase().replace(/\s+/g, '-');
-          
-          // Check if this is a built-in route
-          if (builtInRoutes[slug]) {
-            return { label: menu.title, href: builtInRoutes[slug] };
-          }
-          
-          // Otherwise use /page/{slug} for dynamic pages
-          return { label: menu.title, href: `/page/${slug}` };
-        });
-    }
-    return defaultNavLinks;
+    // Sort by sort_order and filter only visible items
+    return menus
+      .filter((menu: any) => menu.is_visible !== false)
+      .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+      .map((menu: any) => {
+        // If menu has a custom URL, use it
+        if (menu.url) {
+          return { label: menu.title, href: menu.url };
+        }
+        
+        const slug = menu.page_slug || menu.slug || menu.title.toLowerCase().replace(/\s+/g, '-');
+        
+        // Check if this is a built-in route
+        if (builtInRoutes[slug]) {
+          return { label: menu.title, href: builtInRoutes[slug] };
+        }
+        
+        // Otherwise use /page/{slug} for dynamic pages
+        return { label: menu.title, href: `/page/${slug}` };
+      });
   }, [menus]);
 
   const socialLinks = [
@@ -82,10 +71,16 @@ const Navbar = () => {
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-display font-bold text-sm">G</span>
-          </div>
-          <span className="font-display text-xl font-bold text-foreground">Gidel Fiavor</span>
+          {settings?.site_logo ? (
+            <img src={resolveImageUrl(settings.site_logo)} alt={settings?.site_name || ""} className="h-8 w-auto" />
+          ) : settings?.site_name && (
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground font-display font-bold text-sm">{settings.site_name.trim()[0]}</span>
+            </div>
+          )}
+          {settings?.site_name && (
+            <span className="font-display text-xl font-bold text-foreground">{settings.site_name}</span>
+          )}
         </Link>
 
         {/* Center nav links */}

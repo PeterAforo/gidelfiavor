@@ -6,24 +6,18 @@ import { useArticles, usePageSections } from "@/hooks/useCms";
 import { resolveImageUrl } from "@/lib/api";
 import SectionRenderer from "@/components/SectionRenderer";
 import PageHeader from "@/components/PageHeader";
-
-const fallbackArticles = [
-  { id: "1", title: "The Power of Faith in Healthcare Leadership", category: "Healthcare", image_url: "" },
-  { id: "2", title: "Building Stronger Marriages Through Forgiveness", category: "Marriage", image_url: "" },
-  { id: "3", title: "Celibacy and Purpose: A Modern Perspective", category: "Theology", image_url: "" },
-  { id: "4", title: "Healthcare Marketing in the Digital Age", category: "Healthcare", image_url: "" },
-  { id: "5", title: "The Role of Faith in Family Relationships", category: "Faith", image_url: "" },
-  { id: "6", title: "Leadership Principles from Scripture", category: "Theology", image_url: "" },
-];
+import PageLoader from "@/components/PageLoader";
 
 const ArticlesPage = () => {
   // All hooks must be called unconditionally at the top
-  const { data: pageSections = [] } = usePageSections("articles");
+  const { data: pageSections = [], isLoading: sectionsLoading } = usePageSections("articles");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { data: articles } = useArticles(true);
-  
-  // If sections exist in backend, render them instead of hardcoded content
+  const { data: articles = [], isLoading: articlesLoading } = useArticles(true);
+
+  if (sectionsLoading || articlesLoading) return <PageLoader />;
+
+  // Page Builder sections take priority over the default articles layout
   if (pageSections.length > 0) {
     return (
       <main className="pt-20">
@@ -31,9 +25,6 @@ const ArticlesPage = () => {
       </main>
     );
   }
-
-  // Fallback to original hardcoded content
-  const displayArticles = articles && articles.length > 0 ? articles : fallbackArticles;
 
   return (
     <main className="pt-20">
@@ -46,8 +37,11 @@ const ArticlesPage = () => {
       />
       <section className="py-16 md:py-20 bg-background">
         <div className="container mx-auto px-6" ref={ref}>
+          {articles.length === 0 && (
+            <p className="text-center text-muted-foreground font-body">No articles published yet.</p>
+          )}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayArticles.map((article, index) => (
+            {articles.map((article, index) => (
               <motion.div
                 key={article.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -73,12 +67,16 @@ const ArticlesPage = () => {
                     </div>
                     {/* Author and Category overlay */}
                     <div className="absolute top-3 left-3 flex items-center gap-2">
-                      <span className="px-2 py-1 bg-foreground/80 text-background text-xs font-body rounded flex items-center gap-1">
-                        <Users size={10} /> Gidel Fiavor
-                      </span>
-                      <span className="px-2 py-1 bg-foreground/80 text-background text-xs font-body rounded">
-                        {article.category}
-                      </span>
+                      {article.author_name && (
+                        <span className="px-2 py-1 bg-foreground/80 text-background text-xs font-body rounded flex items-center gap-1">
+                          <Users size={10} /> {article.author_name}
+                        </span>
+                      )}
+                      {article.category && (
+                        <span className="px-2 py-1 bg-foreground/80 text-background text-xs font-body rounded">
+                          {article.category}
+                        </span>
+                      )}
                     </div>
                   </div>
                   

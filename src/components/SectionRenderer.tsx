@@ -528,9 +528,11 @@ const TestimonialsSection = ({ section }: { section: Section }) => {
               {content.subtitle}
             </p>
           )}
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-            {content?.heading || "What Readers Say"}
-          </h2>
+          {content?.heading && (
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
+              {content.heading}
+            </h2>
+          )}
         </motion.div>
         
         <div className="grid md:grid-cols-3 gap-6">
@@ -597,9 +599,11 @@ const ContactSection = ({ section }: { section: Section }) => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-            {content?.heading || "Get in Touch"}
-          </h2>
+          {content?.heading && (
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {content.heading}
+            </h2>
+          )}
           {content?.description && (
             <p className="text-muted-foreground font-body max-w-2xl mx-auto">
               {content.description}

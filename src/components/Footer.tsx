@@ -39,9 +39,10 @@ const Footer = () => {
     { icon: Youtube, url: settings?.social_youtube, label: "YouTube" },
   ].filter(link => link.url);
 
-  const contactEmail = settings?.contact_email || siteContent?.contact_email || "author@gidelfiavor.com";
-  const contactAddress = settings?.contact_address || siteContent?.contact_address || "PO Box CS 8318, Tema, Ghana";
-  const contactPhone = settings?.contact_phone || siteContent?.contact_phone || "+233 XX XXX XXXX";
+  const contactEmail = settings?.contact_email || siteContent?.contact_email;
+  const contactAddress = settings?.contact_address || siteContent?.contact_address;
+  const contactPhone = settings?.contact_phone || siteContent?.contact_phone;
+  const siteName: string = settings?.site_name || siteContent?.hero_title || "";
 
   return (
     <footer className="bg-secondary">
@@ -50,17 +51,19 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-12 lg:gap-20">
           {/* Left - Logo, Tagline, Newsletter */}
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-sm">{(settings?.site_name || siteContent?.hero_title || "Gidel")[0]}</span>
-              </div>
-              <span className="font-display text-xl font-bold text-foreground">{settings?.site_name || siteContent?.hero_title?.split(" ")[0] || "Gidel"}</span>
-            </Link>
-            <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6 leading-tight">
-              {settings?.footer_tagline || siteContent?.footer_tagline || (
-                <><span className="font-bold">Get Ready</span> To<br /><span className="font-bold">Create Great</span></>
-              )}
-            </h3>
+            {siteName && (
+              <Link to="/" className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-primary-foreground font-display font-bold text-sm">{siteName.trim()[0]}</span>
+                </div>
+                <span className="font-display text-xl font-bold text-foreground">{siteName}</span>
+              </Link>
+            )}
+            {settings?.footer_text && (
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6 leading-tight">
+                {settings.footer_text}
+              </h3>
+            )}
             <form onSubmit={handleNewsletterSubmit} className="flex items-center gap-2 border-b border-border pb-2">
               <input
                 type="email"
@@ -102,20 +105,26 @@ const Footer = () => {
           <div>
             <h4 className="font-display text-lg font-bold mb-6 text-foreground">Contact</h4>
             <div className="space-y-4">
-              <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors font-body text-sm">
-                <Mail size={16} /> {contactEmail}
-              </a>
-              <p className="flex items-center gap-3 text-muted-foreground font-body text-sm">
-                <MapPin size={16} /> {contactAddress}
-              </p>
-              <p className="flex items-center gap-3 text-muted-foreground font-body text-sm">
-                <Phone size={16} /> {contactPhone}
-              </p>
+              {contactEmail && (
+                <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors font-body text-sm">
+                  <Mail size={16} /> {contactEmail}
+                </a>
+              )}
+              {contactAddress && (
+                <p className="flex items-center gap-3 text-muted-foreground font-body text-sm">
+                  <MapPin size={16} /> {contactAddress}
+                </p>
+              )}
+              {contactPhone && (
+                <p className="flex items-center gap-3 text-muted-foreground font-body text-sm">
+                  <Phone size={16} /> {contactPhone}
+                </p>
+              )}
             </div>
             {/* Social Icons */}
-            <div className="flex gap-2 mt-6">
-              {socialLinks.length > 0 ? (
-                socialLinks.map((social, i) => (
+            {socialLinks.length > 0 && (
+              <div className="flex gap-2 mt-6">
+                {socialLinks.map((social, i) => (
                   <a
                     key={i}
                     href={social.url}
@@ -126,19 +135,9 @@ const Footer = () => {
                   >
                     <social.icon size={16} />
                   </a>
-                ))
-              ) : (
-                [Instagram, Linkedin, Twitter, Facebook].map((Icon, i) => (
-                  <span
-                    key={i}
-                    className="w-9 h-9 rounded-full bg-foreground/50 flex items-center justify-center text-background/50 cursor-not-allowed"
-                    title="Social link not configured"
-                  >
-                    <Icon size={16} />
-                  </span>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -147,7 +146,7 @@ const Footer = () => {
       <div className="border-t border-border">
         <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-body text-sm text-muted-foreground">
-            © {settings?.site_name || siteContent?.hero_title || "Gidel Fiavor"} {new Date().getFullYear()} | {settings?.copyright_text || "All Rights Reserved"}
+            © {siteName} {new Date().getFullYear()} | All Rights Reserved
           </p>
           <div className="flex gap-6">
             <Link to="/terms" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">

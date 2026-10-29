@@ -5,6 +5,7 @@ import { albumsApi } from "@/lib/api";
 import { usePageSections } from "@/hooks/useCms";
 import SectionRenderer from "@/components/SectionRenderer";
 import PageHeader from "@/components/PageHeader";
+import PageLoader from "@/components/PageLoader";
 import { FolderOpen, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const GalleryPage = () => {
@@ -12,7 +13,7 @@ const GalleryPage = () => {
   const [lightboxImage, setLightboxImage] = useState<{ url: string; index: number } | null>(null);
 
   // Try to load sections from backend Page Builder
-  const { data: pageSections = [] } = usePageSections("gallery");
+  const { data: pageSections = [], isLoading: sectionsLoading } = usePageSections("gallery");
 
   // Fetch all albums
   const { data: albums = [], isLoading } = useQuery({
@@ -27,7 +28,9 @@ const GalleryPage = () => {
     enabled: !!selectedAlbum,
   });
 
-  // If sections exist in backend, render them instead of hardcoded content
+  if (sectionsLoading) return <PageLoader />;
+
+  // Page Builder sections take priority over the default gallery layout
   if (pageSections.length > 0) {
     return (
       <main className="pt-20">

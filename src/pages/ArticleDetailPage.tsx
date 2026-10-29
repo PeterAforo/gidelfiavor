@@ -1,11 +1,10 @@
 import { useParams, Link } from "react-router-dom";
-import { useArticle, useArticles } from "@/hooks/useCms";
+import { useArticle, useArticles, useSiteContent, useSiteSettings } from "@/hooks/useCms";
 import { Calendar, User, Search, ArrowRight, Facebook, Twitter, Linkedin, Instagram, Heart, Copy, Check, Share2, MessageCircle } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import authorPortrait from "@/assets/author-portrait.jpg";
 import { toast } from "sonner";
 import { commentsApi, articlesApi, resolveImageUrl } from "@/lib/api";
 
@@ -14,6 +13,15 @@ const ArticleDetailPage = () => {
   const queryClient = useQueryClient();
   const { data: article, isLoading } = useArticle(id || "");
   const { data: allArticles } = useArticles(true);
+  const { data: siteContent } = useSiteContent();
+  const { data: settings } = useSiteSettings();
+  const siteName = siteContent?.hero_title || settings?.site_name || "";
+  const socialLinks = [
+    { icon: Facebook, url: settings?.social_facebook, label: "Facebook" },
+    { icon: Twitter, url: settings?.social_twitter, label: "Twitter" },
+    { icon: Linkedin, url: settings?.social_linkedin, label: "LinkedIn" },
+    { icon: Instagram, url: settings?.social_instagram, label: "Instagram" },
+  ].filter((link) => link.url);
   const [commentForm, setCommentForm] = useState({ name: "", email: "", message: "" });
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -66,7 +74,7 @@ const ArticleDetailPage = () => {
 
   const handleCopyLink = async () => {
     try {
-      const referenceText = `${articleTitle}\nRead more: ${articleUrl}\n\n— Gidel Kwasi Fiavor`;
+      const referenceText = `${articleTitle}\nRead more: ${articleUrl}${siteName ? `\n\n— ${siteName}` : ""}`;
       await navigator.clipboard.writeText(referenceText);
       setCopied(true);
       toast.success("Article link copied to clipboard!");
@@ -165,9 +173,11 @@ const ArticleDetailPage = () => {
 
             {/* Author and Date */}
             <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground font-body">
-              <span className="flex items-center gap-2">
-                <User size={14} /> By {article.author_name || "Gidel Fiavor"}
-              </span>
+              {(article.author_name || siteName) && (
+                <span className="flex items-center gap-2">
+                  <User size={14} /> By {article.author_name || siteName}
+                </span>
+              )}
               <span className="flex items-center gap-2">
                 <Calendar size={14} />
                 {article.publish_date ? format(new Date(article.publish_date), "MMMM d, yyyy") : (article.created_at ? format(new Date(article.created_at), "MMMM d, yyyy") : "")}
@@ -386,23 +396,28 @@ const ArticleDetailPage = () => {
             </div>
 
             {/* About Me */}
-            <div className="bg-secondary rounded-xl p-6 text-center">
-              <h4 className="font-display font-bold text-foreground mb-4">About Me</h4>
-              <img
-                src={authorPortrait}
-                alt="Gidel Fiavor"
-                className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-              />
-              <h5 className="font-display font-bold text-foreground">Gidel Fiavor</h5>
-              <p className="text-xs text-muted-foreground font-body mb-4">Author & Theologian</p>
-              <div className="flex justify-center gap-2">
-                {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                  <a key={i} href="#" className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-primary transition-colors">
-                    <Icon size={12} />
-                  </a>
-                ))}
+            {(siteContent?.about_portrait || siteName) && (
+              <div className="bg-secondary rounded-xl p-6 text-center">
+                <h4 className="font-display font-bold text-foreground mb-4">About Me</h4>
+                {siteContent?.about_portrait && (
+                  <img
+                    src={resolveImageUrl(siteContent.about_portrait)}
+                    alt={siteName}
+                    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+                  />
+                )}
+                {siteName && <h5 className="font-display font-bold text-foreground mb-4">{siteName}</h5>}
+                {socialLinks.length > 0 && (
+                  <div className="flex justify-center gap-2">
+                    {socialLinks.map(({ icon: Icon, url, label }) => (
+                      <a key={label} href={url} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-primary transition-colors">
+                        <Icon size={12} />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -2,15 +2,16 @@ import { Mail, MapPin, Phone, ArrowRight, Loader2 } from "lucide-react";
 import { useSiteContent, usePageSections, useSiteSettings } from "@/hooks/useCms";
 import SectionRenderer from "@/components/SectionRenderer";
 import PageHeader from "@/components/PageHeader";
+import PageLoader from "@/components/PageLoader";
 import { useState } from "react";
 import { contactApi } from "@/lib/api";
 import { toast } from "sonner";
 
 const ContactPage = () => {
   // Try to load sections from backend Page Builder
-  const { data: pageSections = [] } = usePageSections("contact");
-  const { data: content } = useSiteContent();
-  const { data: settings } = useSiteSettings();
+  const { data: pageSections = [], isLoading: sectionsLoading } = usePageSections("contact");
+  const { data: content, isLoading: contentLoading } = useSiteContent();
+  const { data: settings, isLoading: settingsLoading } = useSiteSettings();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -50,11 +51,14 @@ const ContactPage = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const contactEmail = settings?.contact_email || content?.contact_email || "author@gidelfiavor.com";
-  const contactAddress = settings?.contact_address || content?.contact_address || "PO Box CS 8318, Tema, Ghana";
-  const contactPhone = settings?.contact_phone || content?.contact_phone || "+233 XX XXX XXXX";
-  
-  // If sections exist in backend, render them instead of hardcoded content
+  const contactEmail = settings?.contact_email || content?.contact_email;
+  const contactAddress = settings?.contact_address || content?.contact_address;
+  const contactPhone = settings?.contact_phone || content?.contact_phone;
+  const hasContactInfo = Boolean(contactEmail || contactAddress || contactPhone);
+
+  if (sectionsLoading || contentLoading || settingsLoading) return <PageLoader />;
+
+  // Page Builder sections take priority over the default contact layout
   if (pageSections.length > 0) {
     return (
       <main className="pt-20 min-h-screen bg-background">
@@ -76,43 +80,51 @@ const ContactPage = () => {
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-6">
           {/* Contact Info Cards */}
+          {hasContactInfo && (
           <div className="grid md:grid-cols-3 gap-6 mb-16">
             {/* Address Card */}
-            <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <MapPin size={24} className="text-primary" />
+            {contactAddress && (
+              <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
+                <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                  <MapPin size={24} className="text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-foreground mb-3">Address</h3>
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                  {contactAddress}
+                </p>
               </div>
-              <h3 className="font-display font-bold text-foreground mb-3">Address</h3>
-              <p className="text-sm text-muted-foreground font-body leading-relaxed">
-                {contactAddress}
-              </p>
-            </div>
+            )}
 
             {/* Email Card */}
-            <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <Mail size={24} className="text-primary" />
+            {contactEmail && (
+              <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
+                <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Mail size={24} className="text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-foreground mb-3">E-Mail</h3>
+                <a 
+                  href={`mailto:${contactEmail}`}
+                  className="text-sm text-muted-foreground font-body hover:text-primary transition-colors"
+                >
+                  {contactEmail}
+                </a>
               </div>
-              <h3 className="font-display font-bold text-foreground mb-3">E-Mail</h3>
-              <a 
-                href={`mailto:${contactEmail}`}
-                className="text-sm text-muted-foreground font-body hover:text-primary transition-colors"
-              >
-                {contactEmail}
-              </a>
-            </div>
+            )}
 
             {/* Phone Card */}
-            <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <Phone size={24} className="text-primary" />
+            {contactPhone && (
+              <div className="bg-background rounded-2xl p-8 text-center border border-border hover:border-primary/30 transition-colors">
+                <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Phone size={24} className="text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-foreground mb-3">Call Me</h3>
+                <p className="text-sm text-muted-foreground font-body">
+                  {contactPhone}
+                </p>
               </div>
-              <h3 className="font-display font-bold text-foreground mb-3">Call Me</h3>
-              <p className="text-sm text-muted-foreground font-body">
-                {contactPhone}
-              </p>
-            </div>
+            )}
           </div>
+          )}
 
           {/* Contact Form */}
           <div className="max-w-3xl mx-auto">
