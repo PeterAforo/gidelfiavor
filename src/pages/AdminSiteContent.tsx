@@ -229,14 +229,7 @@ const AdminSiteContent = () => {
     setUploading(fieldKey);
     const apiBase = getApiBaseUrl();
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await fetch(`${apiBase}/api/files/upload?folder=hero`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) throw new Error('Upload failed');
-      const data = await response.json();
+      const data = await filesApi.upload(file, 'hero');
       const imageUrl = data.url.startsWith('http') ? data.url : `${apiBase}${data.url}`;
       setValues((v) => ({ ...v, [fieldKey]: data.url }));
       

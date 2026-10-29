@@ -23,16 +23,35 @@ export const resolveImageUrl = (url: string | undefined | null): string => {
   return `${getApiBaseUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
+const AUTH_KEYS = ['auth_user', 'auth_token', 'auth_is_admin'];
+
+export const authHeader = (): Record<string, string> => {
+  const token = localStorage.getItem('auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// Expired/invalid admin session: clear it and send the user back to the login screen
+const handleUnauthorized = (response: Response, sentToken: boolean) => {
+  if (response.status !== 401 || !sentToken) return;
+  AUTH_KEYS.forEach((key) => localStorage.removeItem(key));
+  if (window.location.pathname.startsWith('/admin/')) {
+    window.location.assign('/admin');
+  }
+};
+
 export async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const auth = authHeader();
   const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...auth,
       ...options?.headers,
     },
-    ...options,
   });
 
   if (!response.ok) {
+    handleUnauthorized(response, 'Authorization' in auth);
     const error = await response.json().catch(() => ({ error: 'Request failed' }));
     throw new Error(error.error || 'Request failed');
   }
@@ -125,29 +144,74 @@ export const authApi = {
 // Files
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+// Fallback when Cloudinary isn't configured (local development): multipart upload to the API
+const uploadViaApi = async (file: File, folder: string) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const auth = authHeader();
+  const response = await fetch(`${API_BASE}/files/upload?folder=${folder}`, {
+    method: 'POST',
+    headers: auth,
+    body: formData,
+  });
+  if (!response.ok) {
+    handleUnauthorized(response, 'Authorization' in auth);
+    throw new Error('Upload failed');
+  }
+  return response.json();
+};
+
+const upload = async (file: File, folder: string = 'general') => {
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error('File too large (max 10 MB)');
+  }
+
+  let signed: Record<string, any>;
+  try {
+    signed = await fetchAPI<Record<string, any>>('/files/upload-signature', {
+      method: 'POST',
+      body: JSON.stringify({ folder, isImage: file.type.startsWith('image/') }),
+    });
+  } catch (err: any) {
+    if (err.message === 'Cloudinary not configured') return uploadViaApi(file, folder);
+    throw err;
+  }
+
+  // Upload the file straight to Cloudinary so large files never pass through the API
+  const { cloudName, apiKey, signature, ...params } = signed;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('api_key', apiKey);
+  formData.append('signature', signature);
+  Object.entries(params).forEach(([key, value]) => formData.append(key, String(value)));
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error?.message || 'Upload failed');
+
+  return fetchAPI<any>('/files', {
+    method: 'POST',
+    body: JSON.stringify({
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+      original_name: file.name,
+      file_type: file.type,
+      bytes: result.bytes,
+      folder,
+    }),
+  });
+};
+
 export const filesApi = {
   getAll: (folder?: string) => fetchAPI<any[]>(folder ? `/files?folder=${folder}` : '/files'),
   getFolders: () => fetchAPI<any[]>('/files/folders'),
-  upload: async (file: File, folder: string = 'general') => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await fetch(`${API_BASE}/files/upload?folder=${folder}`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Upload failed');
-    return response.json();
-  },
-  uploadMultiple: async (files: File[], folder: string = 'general') => {
-    const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
-    const response = await fetch(`${API_BASE}/files/upload-multiple?folder=${folder}`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Upload failed');
-    return response.json();
-  },
+  upload,
+  uploadMultiple: (files: File[], folder: string = 'general') =>
+    Promise.all(files.map((file) => upload(file, folder))),
   delete: (id: string) => fetchAPI<any>(`/files/${id}`, { method: 'DELETE' }),
 };
 

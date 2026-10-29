@@ -108,9 +108,7 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
   const handleImageUpload = async (file: File) => {
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const result = await filesApi.upload(formData, 'articles');
+      const result = await filesApi.upload(file, 'articles');
       if (result.url) {
         editor.chain().focus().setImage({ src: result.url }).run();
         toast.success('Image uploaded successfully');

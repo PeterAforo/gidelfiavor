@@ -69,10 +69,18 @@ export const uploadFileToCloudinary = async (file, folder = 'general') => {
   }
 };
 
+// Sign parameters for a direct browser-to-Cloudinary upload
+export const signUploadParams = (params) => ({
+  ...params,
+  signature: cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET),
+  apiKey: process.env.CLOUDINARY_API_KEY,
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+});
+
 // Delete file from Cloudinary
-export const deleteFromCloudinary = async (publicId) => {
+export const deleteFromCloudinary = async (publicId, resourceType = 'image') => {
   try {
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
     return { success: result.result === 'ok' };
   } catch (error) {
     console.error('Cloudinary delete error:', error);
@@ -111,6 +119,7 @@ export default {
   initCloudinary,
   uploadToCloudinary,
   uploadFileToCloudinary,
+  signUploadParams,
   deleteFromCloudinary,
   getOptimizedUrl,
   getResponsiveUrls,

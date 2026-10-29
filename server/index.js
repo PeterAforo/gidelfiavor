@@ -16,7 +16,7 @@ import { generateToken, verifyToken, authMiddleware } from './auth.js';
 import { initEmailService, sendContactEmail, sendContactAutoReply, sendNewsletterWelcome } from './emailService.js';
 import { requestLogger, metricsMiddleware, getHealthStatus, trackError, checkAlerts } from './monitoring.js';
 import { generateSitemap } from './sitemap.js';
-import { initCloudinary, uploadFileToCloudinary, isCloudinaryConfigured } from './cloudinary.js';
+import { initCloudinary, uploadFileToCloudinary, isCloudinaryConfigured, signUploadParams, deleteFromCloudinary } from './cloudinary.js';
 
 dotenv.config();
 const { Pool } = pg;
@@ -25,7 +25,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.API_PORT || 3001;
+const isVercel = !!process.env.VERCEL;
 
 // Initialize Cloudinary
 const cloudinaryEnabled = initCloudinary();
@@ -33,8 +35,14 @@ console.log(`Cloudinary enabled: ${cloudinaryEnabled}`);
 
 // Ensure uploads directory exists (fallback for local storage)
 const uploadsDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+if (!cloudinaryEnabled && !isVercel) {
+  try {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+  } catch (err) {
+    console.warn('Could not create uploads directory:', err.message);
+  }
 }
 
 // Multer configuration - use memory storage for Cloudinary, disk storage for local
@@ -144,13 +152,14 @@ app.use('/api/', generalLimiter);
 
 // PostgreSQL connection - MUST use environment variable
 if (!process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL environment variable is required');
-  process.exit(1);
+  throw new Error('DATABASE_URL environment variable is required');
 }
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  max: isVercel ? 3 : 10,
+  idleTimeoutMillis: 10000,
 });
 
 // Test database connection
@@ -199,7 +208,7 @@ const generateSlug = (title) => {
 };
 
 // Setup database tables
-app.get('/api/setup', async (req, res) => {
+app.get('/api/setup', authMiddleware, async (req, res) => {
   try {
     // Create tables
     await pool.query(`
@@ -508,14 +517,6 @@ app.get('/api/setup', async (req, res) => {
       }
     }
     
-    // Insert default admin with hashed password
-    const defaultPassword = await bcrypt.hash('admin123', 12);
-    await pool.query(`
-      INSERT INTO admin_users (email, password, name) 
-      VALUES ('admin@gidelfiavor.com', $1, 'Admin')
-      ON CONFLICT (email) DO NOTHING
-    `, [defaultPassword]);
-    
     // Insert default site content
     await pool.query(`
       INSERT INTO site_content (hero_title, hero_subtitle, about_heading, about_bio, contact_email)
@@ -550,7 +551,7 @@ app.get('/api/menus', async (req, res) => {
   }
 });
 
-app.post('/api/menus', async (req, res) => {
+app.post('/api/menus', authMiddleware, async (req, res) => {
   try {
     const { title, slug, page_id, parent_id, sort_order, is_visible } = req.body;
     const result = await pool.query(
@@ -563,7 +564,7 @@ app.post('/api/menus', async (req, res) => {
   }
 });
 
-app.put('/api/menus/:id', async (req, res) => {
+app.put('/api/menus/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, slug, page_id, parent_id, sort_order, is_visible } = req.body;
@@ -577,7 +578,7 @@ app.put('/api/menus/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/menus/:id', async (req, res) => {
+app.delete('/api/menus/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM menus WHERE id=$1', [id]);
@@ -635,7 +636,7 @@ app.get('/api/pages/slug/:slug/sections', async (req, res) => {
   }
 });
 
-app.post('/api/pages', async (req, res) => {
+app.post('/api/pages', authMiddleware, async (req, res) => {
   try {
     const { title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images } = req.body;
     const result = await pool.query(
@@ -648,7 +649,7 @@ app.post('/api/pages', async (req, res) => {
   }
 });
 
-app.put('/api/pages/:id', async (req, res) => {
+app.put('/api/pages/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images } = req.body;
@@ -662,7 +663,7 @@ app.put('/api/pages/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/pages/:id', async (req, res) => {
+app.delete('/api/pages/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM pages WHERE id=$1', [id]);
@@ -693,7 +694,7 @@ app.get('/api/albums/:id', async (req, res) => {
   }
 });
 
-app.post('/api/albums', async (req, res) => {
+app.post('/api/albums', authMiddleware, async (req, res) => {
   try {
     const { title, description, cover_url, sort_order } = req.body;
     const result = await pool.query(
@@ -706,7 +707,7 @@ app.post('/api/albums', async (req, res) => {
   }
 });
 
-app.put('/api/albums/:id', async (req, res) => {
+app.put('/api/albums/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, cover_url, sort_order } = req.body;
@@ -720,7 +721,7 @@ app.put('/api/albums/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/albums/:id', async (req, res) => {
+app.delete('/api/albums/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM album_media WHERE album_id=$1', [id]);
@@ -742,7 +743,7 @@ app.get('/api/albums/:albumId/media', async (req, res) => {
   }
 });
 
-app.post('/api/albums/:albumId/media', async (req, res) => {
+app.post('/api/albums/:albumId/media', authMiddleware, async (req, res) => {
   try {
     const { albumId } = req.params;
     const { media_url, media_type, caption, sort_order } = req.body;
@@ -756,7 +757,7 @@ app.post('/api/albums/:albumId/media', async (req, res) => {
   }
 });
 
-app.delete('/api/media/:id', async (req, res) => {
+app.delete('/api/media/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM album_media WHERE id=$1', [id]);
@@ -777,7 +778,7 @@ app.get('/api/books', async (req, res) => {
   }
 });
 
-app.post('/api/books', validateRequest('book'), async (req, res) => {
+app.post('/api/books', authMiddleware, validateRequest('book'), async (req, res) => {
   try {
     const { title, description, cover_url, year, tags, purchase_link, sort_order } = req.body;
     const result = await pool.query(
@@ -790,7 +791,7 @@ app.post('/api/books', validateRequest('book'), async (req, res) => {
   }
 });
 
-app.put('/api/books/:id', validateRequest('book'), async (req, res) => {
+app.put('/api/books/:id', authMiddleware, validateRequest('book'), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, cover_url, year, tags, purchase_link, sort_order } = req.body;
@@ -804,7 +805,7 @@ app.put('/api/books/:id', validateRequest('book'), async (req, res) => {
   }
 });
 
-app.delete('/api/books/:id', async (req, res) => {
+app.delete('/api/books/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM books WHERE id=$1', [id]);
@@ -835,7 +836,7 @@ app.get('/api/articles/:id', async (req, res) => {
   }
 });
 
-app.post('/api/articles', validateRequest('article'), async (req, res) => {
+app.post('/api/articles', authMiddleware, validateRequest('article'), async (req, res) => {
   try {
     const { title, content, excerpt, image_url, category, published, publish_date, author_name } = req.body;
     const result = await pool.query(
@@ -848,7 +849,7 @@ app.post('/api/articles', validateRequest('article'), async (req, res) => {
   }
 });
 
-app.put('/api/articles/:id', validateRequest('article'), async (req, res) => {
+app.put('/api/articles/:id', authMiddleware, validateRequest('article'), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content, excerpt, image_url, category, published, publish_date, author_name } = req.body;
@@ -862,7 +863,7 @@ app.put('/api/articles/:id', validateRequest('article'), async (req, res) => {
   }
 });
 
-app.delete('/api/articles/:id', async (req, res) => {
+app.delete('/api/articles/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM articles WHERE id=$1', [id]);
@@ -883,7 +884,7 @@ app.get('/api/gallery', async (req, res) => {
   }
 });
 
-app.post('/api/gallery', async (req, res) => {
+app.post('/api/gallery', authMiddleware, async (req, res) => {
   try {
     const { image_url, caption, sort_order } = req.body;
     const result = await pool.query(
@@ -896,7 +897,7 @@ app.post('/api/gallery', async (req, res) => {
   }
 });
 
-app.delete('/api/gallery/:id', async (req, res) => {
+app.delete('/api/gallery/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM gallery_images WHERE id=$1', [id]);
@@ -907,7 +908,7 @@ app.delete('/api/gallery/:id', async (req, res) => {
 });
 
 // ============ TESTIMONIALS ============
-app.get('/api/testimonials', async (req, res) => {
+app.get('/api/testimonials', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM testimonials ORDER BY sort_order ASC');
     res.json(result.rows);
@@ -917,7 +918,7 @@ app.get('/api/testimonials', async (req, res) => {
   }
 });
 
-app.post('/api/testimonials', async (req, res) => {
+app.post('/api/testimonials', authMiddleware, async (req, res) => {
   try {
     const { name, role, quote, image_url, sort_order } = req.body;
     const result = await pool.query(
@@ -930,7 +931,7 @@ app.post('/api/testimonials', async (req, res) => {
   }
 });
 
-app.delete('/api/testimonials/:id', async (req, res) => {
+app.delete('/api/testimonials/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM testimonials WHERE id=$1', [id]);
@@ -940,7 +941,7 @@ app.delete('/api/testimonials/:id', async (req, res) => {
   }
 });
 
-app.put('/api/testimonials/:id', async (req, res) => {
+app.put('/api/testimonials/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, role, quote, image_url, sort_order, is_approved } = req.body;
@@ -1021,7 +1022,7 @@ app.get('/api/site-content', async (req, res) => {
   }
 });
 
-app.put('/api/site-content', async (req, res) => {
+app.put('/api/site-content', authMiddleware, async (req, res) => {
   try {
     const fields = req.body;
     
@@ -1130,7 +1131,7 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
 });
 
 // Register new admin (protected - should only be called during setup)
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', authMiddleware, async (req, res) => {
   try {
     const { email, password, name } = req.body;
     
@@ -1165,7 +1166,7 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 // Change password
-app.post('/api/auth/change-password', async (req, res) => {
+app.post('/api/auth/change-password', authMiddleware, async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
     
@@ -1175,6 +1176,10 @@ app.post('/api/auth/change-password', async (req, res) => {
     
     if (newPassword.length < 8) {
       return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+    
+    if (email.toLowerCase().trim() !== String(req.user.email).toLowerCase()) {
+      return res.status(403).json({ error: 'You can only change your own password' });
     }
     
     const result = await pool.query('SELECT * FROM admin_users WHERE email=$1', [email.toLowerCase().trim()]);
@@ -1209,7 +1214,7 @@ app.post('/api/auth/change-password', async (req, res) => {
 
 // ============ FILE MANAGER ============
 // Upload single file
-app.post('/api/files/upload', upload.single('file'), async (req, res) => {
+app.post('/api/files/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -1246,7 +1251,7 @@ app.post('/api/files/upload', upload.single('file'), async (req, res) => {
 });
 
 // Upload multiple files
-app.post('/api/files/upload-multiple', upload.array('files', 20), async (req, res) => {
+app.post('/api/files/upload-multiple', authMiddleware, upload.array('files', 20), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
@@ -1285,8 +1290,44 @@ app.post('/api/files/upload-multiple', upload.array('files', 20), async (req, re
   }
 });
 
+const sanitizeFolder = (folder) => String(folder || 'general').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'general';
+
+// Sign a direct browser-to-Cloudinary upload (keeps file bytes off the API, avoiding body size limits)
+app.post('/api/files/upload-signature', authMiddleware, (req, res) => {
+  if (!isCloudinaryConfigured()) {
+    return res.status(501).json({ error: 'Cloudinary not configured' });
+  }
+  const params = {
+    timestamp: Math.round(Date.now() / 1000),
+    folder: `gidelfiavor/${sanitizeFolder(req.body?.folder)}`,
+  };
+  if (req.body?.isImage) {
+    params.transformation = 'c_limit,w_1200,h_1200/q_auto:good/f_auto';
+  }
+  res.json(signUploadParams(params));
+});
+
+// Register a file that the browser uploaded directly to Cloudinary
+app.post('/api/files', authMiddleware, async (req, res) => {
+  try {
+    const { public_id, secure_url, original_name, file_type, bytes, folder } = req.body || {};
+    const allowedPrefix = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`;
+    if (!public_id || typeof secure_url !== 'string' || !secure_url.startsWith(allowedPrefix)) {
+      return res.status(400).json({ error: 'Invalid upload data' });
+    }
+    const result = await pool.query(
+      'INSERT INTO files (filename, original_name, file_path, file_type, file_size, folder) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [public_id, sanitizeString(original_name || public_id, 255), secure_url, file_type || null, parseInt(bytes) || null, sanitizeFolder(folder)]
+    );
+    res.json({ ...result.rows[0], url: secure_url });
+  } catch (err) {
+    console.error('File register error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get all files
-app.get('/api/files', async (req, res) => {
+app.get('/api/files', authMiddleware, async (req, res) => {
   try {
     const folder = req.query.folder;
     let query = 'SELECT * FROM files ORDER BY created_at DESC';
@@ -1305,7 +1346,7 @@ app.get('/api/files', async (req, res) => {
 });
 
 // Get folders
-app.get('/api/files/folders', async (req, res) => {
+app.get('/api/files/folders', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT DISTINCT folder, COUNT(*) as file_count FROM files GROUP BY folder ORDER BY folder');
     res.json(result.rows);
@@ -1315,15 +1356,29 @@ app.get('/api/files/folders', async (req, res) => {
 });
 
 // Delete file
-app.delete('/api/files/:id', async (req, res) => {
+app.delete('/api/files/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const file = await pool.query('SELECT * FROM files WHERE id=$1', [id]);
     
     if (file.rows.length > 0) {
-      const filePath = path.join(__dirname, '../public', file.rows[0].file_path);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      const { file_path, filename, file_type } = file.rows[0];
+      if (file_path.includes('res.cloudinary.com')) {
+        // Cloudinary stores images and PDFs as "image", audio/video as "video", other documents as "raw"
+        const resourceType = /^(video|audio)\//.test(file_type || '') ? 'video' : 'image';
+        const deleted = await deleteFromCloudinary(filename, resourceType);
+        if (!deleted.success && resourceType === 'image') {
+          await deleteFromCloudinary(filename, 'raw');
+        }
+      } else {
+        try {
+          const filePath = path.join(__dirname, '../public', file_path);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        } catch (e) {
+          console.warn('Could not delete local file:', e.message);
+        }
       }
       await pool.query('DELETE FROM files WHERE id=$1', [id]);
     }
@@ -1344,7 +1399,7 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-app.put('/api/settings', async (req, res) => {
+app.put('/api/settings', authMiddleware, async (req, res) => {
   try {
     const fields = req.body;
     const keys = Object.keys(fields);
@@ -1419,7 +1474,7 @@ app.post('/api/articles/:articleId/comments', async (req, res) => {
 });
 
 // Admin: Get all comments (including unapproved)
-app.get('/api/admin/comments', async (req, res) => {
+app.get('/api/admin/comments', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT c.*, a.title as article_title 
@@ -1434,7 +1489,7 @@ app.get('/api/admin/comments', async (req, res) => {
 });
 
 // Admin: Approve/reject comment
-app.put('/api/admin/comments/:id', async (req, res) => {
+app.put('/api/admin/comments/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { is_approved } = req.body;
@@ -1449,7 +1504,7 @@ app.put('/api/admin/comments/:id', async (req, res) => {
 });
 
 // Admin: Delete comment
-app.delete('/api/admin/comments/:id', async (req, res) => {
+app.delete('/api/admin/comments/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM article_comments WHERE id=$1', [id]);
@@ -1473,7 +1528,7 @@ app.get('/api/pages/:pageId/sections', async (req, res) => {
   }
 });
 
-app.post('/api/pages/:pageId/sections', async (req, res) => {
+app.post('/api/pages/:pageId/sections', authMiddleware, async (req, res) => {
   try {
     const { pageId } = req.params;
     const { section_type, title, content, settings, sort_order, is_visible } = req.body;
@@ -1487,7 +1542,7 @@ app.post('/api/pages/:pageId/sections', async (req, res) => {
   }
 });
 
-app.put('/api/sections/:id', async (req, res) => {
+app.put('/api/sections/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { section_type, title, content, settings, sort_order, is_visible } = req.body;
@@ -1527,7 +1582,7 @@ app.put('/api/sections/:id', async (req, res) => {
 });
 
 // Bulk update section order
-app.put('/api/pages/:pageId/sections/reorder', async (req, res) => {
+app.put('/api/pages/:pageId/sections/reorder', authMiddleware, async (req, res) => {
   try {
     const { sections } = req.body; // Array of { id, sort_order }
     for (const section of sections) {
@@ -1539,7 +1594,7 @@ app.put('/api/pages/:pageId/sections/reorder', async (req, res) => {
   }
 });
 
-app.delete('/api/sections/:id', async (req, res) => {
+app.delete('/api/sections/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM page_sections WHERE id=$1', [id]);
@@ -1608,7 +1663,7 @@ app.post('/api/articles/:id/unlike', async (req, res) => {
 });
 
 // Get analytics dashboard data
-app.get('/api/analytics/dashboard', async (req, res) => {
+app.get('/api/analytics/dashboard', authMiddleware, async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 30;
     
@@ -1697,7 +1752,7 @@ app.get('/api/analytics/dashboard', async (req, res) => {
 });
 
 // ============ SOCIAL FEEDS ============
-app.get('/api/social-feeds', async (req, res) => {
+app.get('/api/social-feeds', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, platform, account_name, is_connected, last_synced FROM social_feeds ORDER BY platform');
     res.json(result.rows);
@@ -1706,7 +1761,7 @@ app.get('/api/social-feeds', async (req, res) => {
   }
 });
 
-app.post('/api/social-feeds', async (req, res) => {
+app.post('/api/social-feeds', authMiddleware, async (req, res) => {
   try {
     const { platform, account_name, access_token, refresh_token } = req.body;
     const result = await pool.query(
@@ -1719,7 +1774,7 @@ app.post('/api/social-feeds', async (req, res) => {
   }
 });
 
-app.delete('/api/social-feeds/:id', async (req, res) => {
+app.delete('/api/social-feeds/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query('DELETE FROM social_posts WHERE feed_id=$1', [id]);
@@ -1730,7 +1785,7 @@ app.delete('/api/social-feeds/:id', async (req, res) => {
   }
 });
 
-app.put('/api/social-feeds/:id', async (req, res) => {
+app.put('/api/social-feeds/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { account_name, access_token } = req.body;
@@ -1744,7 +1799,7 @@ app.put('/api/social-feeds/:id', async (req, res) => {
   }
 });
 
-app.post('/api/social-feeds/:id/sync', async (req, res) => {
+app.post('/api/social-feeds/:id/sync', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -1884,7 +1939,7 @@ app.get('/api/social-posts', async (req, res) => {
 });
 
 // ============ SLUG GENERATION ============
-app.post('/api/generate-slug', (req, res) => {
+app.post('/api/generate-slug', authMiddleware, (req, res) => {
   const { title } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
@@ -2022,7 +2077,7 @@ app.post('/api/newsletter/unsubscribe', async (req, res) => {
 });
 
 // Admin: Get newsletter subscribers
-app.get('/api/admin/newsletter', async (req, res) => {
+app.get('/api/admin/newsletter', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, email, name, is_active, subscribed_at FROM newsletter_subscribers ORDER BY subscribed_at DESC');
     res.json(result.rows);
@@ -2032,7 +2087,7 @@ app.get('/api/admin/newsletter', async (req, res) => {
 });
 
 // ============ ADMIN USERS ============
-app.get('/api/admin/users', async (req, res) => {
+app.get('/api/admin/users', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, email, name, created_at FROM admin_users ORDER BY created_at DESC');
     res.json(result.rows);
@@ -2041,7 +2096,7 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
-app.delete('/api/admin/users/:id', async (req, res) => {
+app.delete('/api/admin/users/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     // Prevent deleting the last admin
@@ -2056,7 +2111,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   }
 });
 
-app.put('/api/admin/users/:id', async (req, res) => {
+app.put('/api/admin/users/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email } = req.body;
@@ -2071,6 +2126,10 @@ app.put('/api/admin/users/:id', async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT}`);
-});
+if (!isVercel) {
+  app.listen(PORT, () => {
+    console.log(`API server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

@@ -1,6 +1,19 @@
 # API Documentation
 
-Base URL: `https://gidelfiavor-api.onrender.com`
+Base URL: `https://www.gidelfiavor.com` (served by the Vercel function `api/index.js`)
+
+**Authorization:** All admin routes (every create/update/delete on content, file uploads,
+`/api/setup`, `/api/admin/*`, `/api/analytics/dashboard`, `/api/files*`, the full
+`/api/testimonials` list, `/api/social-feeds`, `/api/auth/register`, `/api/auth/change-password`)
+require `Authorization: Bearer <token>` using the token returned by `/api/auth/login`.
+Without it they return `401`. Public content reads, contact, newsletter, testimonial submission,
+comments, likes/views and analytics page views do not require a token.
+
+### File uploads (direct to Cloudinary)
+1. `POST /api/files/upload-signature` `{ "folder": "albums", "isImage": true }` → signed params
+   (`501` if Cloudinary is not configured; then use `POST /api/files/upload` multipart instead).
+2. Browser posts the file plus the signed params to `https://api.cloudinary.com/v1_1/<cloudName>/auto/upload`.
+3. `POST /api/files` `{ public_id, secure_url, original_name, file_type, bytes, folder }` registers it.
 
 ---
 

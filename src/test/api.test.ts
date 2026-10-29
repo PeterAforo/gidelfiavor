@@ -12,7 +12,101 @@ import {
   testimonialsApi,
   siteContentApi,
   authApi,
+  filesApi,
 } from '@/lib/api';
+
+const jsonResponse = (body: unknown, ok = true, status = ok ? 200 : 400) => ({
+  ok,
+  status,
+  json: () => Promise.resolve(body),
+});
+
+describe('Auth header and 401 handling', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+    localStorage.clear();
+  });
+
+  it('attaches Bearer token when logged in', async () => {
+    localStorage.setItem('auth_token', 'tok123');
+    mockFetch.mockResolvedValueOnce(jsonResponse([]));
+    await booksApi.getAll();
+    expect(mockFetch.mock.calls[0][1].headers).toMatchObject({
+      Authorization: 'Bearer tok123',
+      'Content-Type': 'application/json',
+    });
+  });
+
+  it('omits Authorization when not logged in', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse([]));
+    await booksApi.getAll();
+    expect(mockFetch.mock.calls[0][1].headers).not.toHaveProperty('Authorization');
+  });
+
+  it('clears the stored session on 401 when a token was sent', async () => {
+    localStorage.setItem('auth_token', 'expired');
+    localStorage.setItem('auth_user', '{}');
+    localStorage.setItem('auth_is_admin', 'true');
+    mockFetch.mockResolvedValueOnce(jsonResponse({ error: 'Invalid or expired token' }, false, 401));
+    await expect(booksApi.create({ title: 'x' })).rejects.toThrow('Invalid or expired token');
+    expect(localStorage.getItem('auth_token')).toBeNull();
+    expect(localStorage.getItem('auth_user')).toBeNull();
+    expect(localStorage.getItem('auth_is_admin')).toBeNull();
+  });
+});
+
+describe('filesApi.upload', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+    localStorage.clear();
+    localStorage.setItem('auth_token', 'tok');
+  });
+
+  const image = () => new File(['abc'], 'photo.jpg', { type: 'image/jpeg' });
+
+  it('signs, uploads directly to Cloudinary, then registers the file', async () => {
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse({ cloudName: 'demo', apiKey: 'k', signature: 's', timestamp: 1, folder: 'gidelfiavor/albums' }))
+      .mockResolvedValueOnce(jsonResponse({ public_id: 'gidelfiavor/albums/x', secure_url: 'https://res.cloudinary.com/demo/x.jpg', bytes: 3 }))
+      .mockResolvedValueOnce(jsonResponse({ id: 1, url: 'https://res.cloudinary.com/demo/x.jpg' }));
+
+    const result = await filesApi.upload(image(), 'albums');
+
+    expect(mockFetch.mock.calls[0][0]).toContain('/files/upload-signature');
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual({ folder: 'albums', isImage: true });
+    expect(mockFetch.mock.calls[1][0]).toBe('https://api.cloudinary.com/v1_1/demo/auto/upload');
+    const form = mockFetch.mock.calls[1][1].body as FormData;
+    expect(form.get('signature')).toBe('s');
+    expect(form.get('api_key')).toBe('k');
+    expect(form.get('folder')).toBe('gidelfiavor/albums');
+    expect(form.get('cloudName')).toBeNull();
+    expect(mockFetch.mock.calls[2][0]).toMatch(/\/files$/);
+    expect(JSON.parse(mockFetch.mock.calls[2][1].body)).toMatchObject({
+      public_id: 'gidelfiavor/albums/x',
+      original_name: 'photo.jpg',
+      folder: 'albums',
+    });
+    expect(result.url).toBe('https://res.cloudinary.com/demo/x.jpg');
+  });
+
+  it('falls back to multipart API upload when Cloudinary is not configured', async () => {
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse({ error: 'Cloudinary not configured' }, false, 501))
+      .mockResolvedValueOnce(jsonResponse({ id: 2, url: '/uploads/general/a.jpg' }));
+
+    const result = await filesApi.upload(image());
+
+    expect(mockFetch.mock.calls[1][0]).toContain('/files/upload?folder=general');
+    expect(mockFetch.mock.calls[1][1].headers).toEqual({ Authorization: 'Bearer tok' });
+    expect(result.url).toBe('/uploads/general/a.jpg');
+  });
+
+  it('rejects files over 10 MB without calling the network', async () => {
+    const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'big.jpg', { type: 'image/jpeg' });
+    await expect(filesApi.upload(big)).rejects.toThrow('File too large');
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
 
 describe('API Client', () => {
   beforeEach(() => {

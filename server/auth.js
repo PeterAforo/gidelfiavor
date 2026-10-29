@@ -1,7 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gidelfiavor-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '24h';
+
+// Read lazily: ES module imports run before dotenv.config() in index.js
+const getSecret = () => {
+  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET environment variable is required in production');
+  }
+  return 'gidelfiavor-dev-secret-local-only';
+};
 
 // Generate JWT token
 export const generateToken = (user) => {
@@ -11,7 +19,7 @@ export const generateToken = (user) => {
       email: user.email,
       name: user.name 
     },
-    JWT_SECRET,
+    getSecret(),
     { expiresIn: JWT_EXPIRES_IN }
   );
 };
@@ -19,7 +27,7 @@ export const generateToken = (user) => {
 // Verify JWT token
 export const verifyToken = (token) => {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, getSecret());
   } catch (error) {
     return null;
   }
