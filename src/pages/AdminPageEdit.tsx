@@ -55,7 +55,7 @@ const AdminPageEdit = () => {
         is_published: page.is_published ?? true,
         featured_image: page.featured_image || "",
         header_image: page.header_image || "",
-        gallery_images: page.gallery_images || [],
+        gallery_images: Array.isArray(page.gallery_images) ? page.gallery_images : [],
       });
     }
   }, [page]);

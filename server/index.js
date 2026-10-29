@@ -639,9 +639,10 @@ app.get('/api/pages/slug/:slug/sections', async (req, res) => {
 app.post('/api/pages', authMiddleware, async (req, res) => {
   try {
     const { title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images } = req.body;
+    const gallery = Array.isArray(gallery_images) ? gallery_images : [];
     const result = await pool.query(
       'INSERT INTO pages (title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-      [title, slug, content, meta_title, meta_description, is_published ?? true, featured_image, header_image, gallery_images]
+      [title, slug, content, meta_title, meta_description, is_published ?? true, featured_image, header_image, JSON.stringify(gallery)]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -653,9 +654,10 @@ app.put('/api/pages/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images } = req.body;
+    const gallery = Array.isArray(gallery_images) ? gallery_images : [];
     const result = await pool.query(
       'UPDATE pages SET title=$1, slug=$2, content=$3, meta_title=$4, meta_description=$5, is_published=$6, featured_image=$7, header_image=$8, gallery_images=$9 WHERE id=$10 RETURNING *',
-      [title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, gallery_images, id]
+      [title, slug, content, meta_title, meta_description, is_published, featured_image, header_image, JSON.stringify(gallery), id]
     );
     res.json(result.rows[0]);
   } catch (err) {
